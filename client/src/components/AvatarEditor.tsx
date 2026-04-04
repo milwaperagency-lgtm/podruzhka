@@ -95,10 +95,10 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
       case 'face':
         return (
           <div className="space-y-4">
-            <OptionRow label="Уши">
+            <OptionRow label="Уши (контур)">
               <ChipSelect value={value.partEars} onChange={(v) => patch({ partEars: v })} options={PART_EARS} />
             </OptionRow>
-            <OptionRow label="Декор / макияж кожи">
+            <OptionRow label="Макияж и декор кожи">
               <ChipSelect
                 value={value.partDecorFace}
                 onChange={(v) => patch({ partDecorFace: v })}
@@ -108,22 +108,22 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
             <OptionRow label="Нос">
               <ChipSelect value={value.partNose} onChange={(v) => patch({ partNose: v })} options={PART_NOSE} />
             </OptionRow>
-            <OptionRow label="Тон кожи">
-              <ChipSelect value={value.skinTone} onChange={(v) => patch({ skinTone: v })} options={SKIN_TONES} />
+            <OptionRow label="База: тон кожи (под всеми слоями)">
+              <ChipSelect value={value.skinTone} onChange={(v) => patch({ skinTone: v })} options={[...SKIN_TONES]} />
             </OptionRow>
           </div>
         );
       case 'eyes':
         return (
           <div className="space-y-4">
-            <OptionRow label="Белок глаза">
+            <OptionRow label="Склера и форма глаза">
               <ChipSelect
                 value={value.partEyeWhite}
                 onChange={(v) => patch({ partEyeWhite: v })}
                 options={PART_EYE_WHITE}
               />
             </OptionRow>
-            <OptionRow label="Зрачок">
+            <OptionRow label="Радужка и зрачок">
               <ChipSelect value={value.partPupil} onChange={(v) => patch({ partPupil: v })} options={PART_PUPILS} />
             </OptionRow>
             <OptionRow label="Брови">
@@ -133,7 +133,7 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
                 options={PART_EYEBROWS}
               />
             </OptionRow>
-            <OptionRow label="Ресницы">
+            <OptionRow label="Ресницы и линия роста">
               <ChipSelect
                 value={value.partEyelashes}
                 onChange={(v) => patch({ partEyelashes: v })}
@@ -144,20 +144,20 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
         );
       case 'mouth':
         return (
-          <OptionRow label="Форма губ">
+          <OptionRow label="Губы и форма рта">
             <ChipSelect value={value.partMouth} onChange={(v) => patch({ partMouth: v })} options={PART_MOUTH} />
           </OptionRow>
         );
       case 'hair':
         return (
           <div className="space-y-4">
-            <OptionRow label="Причёска (зад)">
+            <OptionRow label="Задняя часть причёски">
               <ChipSelect value={value.hairSet} onChange={(v) => patch({ hairSet: v })} options={HAIR_SETS} />
             </OptionRow>
-            <OptionRow label="Вариант волос (a/b)">
+            <OptionRow label="Оттенок прядей сзади">
               <ChipSelect value={value.hairTone} onChange={(v) => patch({ hairTone: v })} options={HAIR_TONES} />
             </OptionRow>
-            <OptionRow label="Чёлка">
+            <OptionRow label="Чёлка (перед лица)">
               <ChipSelect value={value.hairBangs} onChange={(v) => patch({ hairBangs: v })} options={HAIR_BANGS_OPTS} />
             </OptionRow>
           </div>
@@ -189,14 +189,14 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
             </OptionRow>
             {value.outfitMode === 'separate' ? (
               <>
-                <OptionRow label="Низ">
+                <OptionRow label="Низ (юбка / брюки)">
                   <ChipSelect
                     value={value.casualBottom}
                     onChange={(v) => patch({ casualBottom: v })}
                     options={CASUAL_BOTTOMS}
                   />
                 </OptionRow>
-                <OptionRow label="Верх">
+                <OptionRow label="Верх (топ / рубашка)">
                   <ChipSelect value={value.casualTop} onChange={(v) => patch({ casualTop: v })} options={CASUAL_TOPS} />
                 </OptionRow>
               </>
@@ -216,7 +216,7 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
                 options={CASUAL_JACKETS}
               />
             </OptionRow>
-            <OptionRow label="Бельё">
+            <OptionRow label="Нижнее бельё">
               <ChipSelect
                 value={value.casualUnderwear}
                 onChange={(v) => patch({ casualUnderwear: v })}
@@ -249,10 +249,10 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div
-        className="glass-panel mx-auto w-full max-w-[340px] overflow-hidden p-2 transition-all duration-300 ease-out"
+        className="glass-panel mx-auto w-full max-w-[340px] overflow-visible p-2 transition-all duration-300 ease-out"
         style={{ aspectRatio: `${320}/${420}` }}
       >
-        <div className="h-full w-full origin-top scale-[0.98] transition-transform duration-300 ease-out">
+        <div className="h-full w-full min-h-0">
           <BeautyAvatarCanvas ref={previewRef} state={value} />
         </div>
       </div>

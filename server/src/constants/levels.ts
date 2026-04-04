@@ -19,11 +19,9 @@ export const LEVEL_POINTS: Record<number, number> = {
   18: 55,
   19: 75,
   20: 120,
-};
-
-export const PROMO_AT_LEVEL: Partial<Record<number, number>> = {
-  5: 5,
-  10: 10,
-  15: 15,
-  20: 20,
+  21: 60,
+  22: 65,
+  23: 70,
+  24: 80,
+  25: 150,
 };

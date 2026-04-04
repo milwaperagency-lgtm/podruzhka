@@ -1,10 +1,11 @@
-import type { AvatarState } from '../constants/avatar.js';
-import { DEFAULT_AVATAR, diffCount, hasAnyMakeup, makeupLayerCount } from '../constants/avatar.js';
+/**
+ * Синхронно с server/src/game/levelChecks.ts — проверка до отправки на сервер.
+ */
+import type { AvatarState } from '@/types';
+import { DEFAULT_AVATAR, diffCount, hasAnyMakeup, makeupLayerCount } from '@/lib/avatarGame';
 
-/** Подстройте под арт набора: индексы файлов shoes/N.webp */
 const HEELS = new Set(['7', '8', '9', '10']);
 const SNEAKERS = new Set(['1', '2', '3', '4', '5']);
-/** «Casual» верх для уровня 4 */
 const CASUAL_TOPS_CASUAL = new Set(['1', '2', '3', '4', '5', '6']);
 
 const BOLD_MOUTH = ['11', '12', '13', '14'];

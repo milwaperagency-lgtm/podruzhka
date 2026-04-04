@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import axios from 'axios';
 import WebApp from '@twa-dev/sdk';
 import type Konva from 'konva';
 import {
@@ -13,12 +14,27 @@ import type { AvatarState, PromoReward, UserProfile } from '@/types';
 import { defaultAvatarState, normalizeAvatarState } from '@/types';
 import { publicUrl } from '@/lib/publicUrl';
 import { LEVELS } from '@/data/levels';
+import { validateLevelTask } from '@/game/levelChecks';
 import AvatarEditor from '@/components/AvatarEditor';
+
+const PRAISE_ON_LEVEL = [
+  'Великолепно! Образ огонь.',
+  'Ты сияешь — задание выполнено!',
+  'Идеальный вкус, так держать!',
+  'Браво! Стиль на высоте.',
+  'Умничка! Образ собран безупречно.',
+  'Восторг! Такой look заслуживает аплодисментов.',
+  'Супер! Ты настоящая beauty-звезда.',
+];
+
+function pickPraise(): string {
+  return PRAISE_ON_LEVEL[Math.floor(Math.random() * PRAISE_ON_LEVEL.length)]!;
+}
 
 const CHANNEL = import.meta.env.VITE_TELEGRAM_CHANNEL ?? 'https://t.me/podruzhkahse';
 const BOT_LINK = import.meta.env.VITE_TELEGRAM_BOT ?? 'https://t.me/podruzhkahse_bot';
 
-/** Логотип: PNG из сборки или SVG-запасной вариант (если PNG не скопирован в `public/`). */
+/** Логотип: `public/podruzhka-logo.png` (бренд #FF78B4), запасной SVG при ошибке загрузки. */
 function PodruzhkaLogo({ className = '' }: { className?: string }) {
   return (
     <img
@@ -75,6 +91,7 @@ export default function App() {
   const [avatar, setAvatar] = useState<AvatarState>(defaultAvatarState());
   const [tab, setTab] = useState<Tab>('home');
   const [levelMsg, setLevelMsg] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ title: string; subtitle?: string } | null>(null);
   const [promos, setPromos] = useState<PromoReward[]>([]);
   const stageRef = useRef<Konva.Stage>(null);
 
@@ -108,6 +125,12 @@ export default function App() {
       .finally(() => setLoading(false));
   }, [refresh]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(null), 4800);
+    return () => window.clearTimeout(t);
+  }, [toast]);
+
   const onSubscribeOpen = () => {
     WebApp.openTelegramLink(CHANNEL.startsWith('http') ? CHANNEL : `https://t.me/${CHANNEL.replace('@', '')}`);
   };
@@ -136,15 +159,25 @@ export default function App() {
 
   const completeCurrentLevel = async (levelId: number) => {
     setLevelMsg(null);
+    const localCheck = validateLevelTask(levelId, avatar);
+    if (!localCheck.ok) {
+      setLevelMsg(localCheck.reason);
+      WebApp.HapticFeedback?.notificationOccurred?.('error');
+      return;
+    }
     try {
+      await saveAvatar(avatar);
       const r = await completeLevel(levelId, avatar);
+      const praise = pickPraise();
       if (r.promo) {
-        setLevelMsg(`Уровень пройден! Промокод: ${r.promo.code} (−${r.promo.discount}%)`);
-        WebApp.HapticFeedback?.notificationOccurred?.('success');
+        const line = `Промокод ${r.promo.code} (−${r.promo.discount}%)`;
+        setLevelMsg(`Уровень ${levelId} пройден! ${line}`);
+        setToast({ title: praise, subtitle: line });
       } else {
-        setLevelMsg('Уровень пройден!');
-        WebApp.HapticFeedback?.notificationOccurred?.('success');
+        setLevelMsg(`Уровень ${levelId} пройден!`);
+        setToast({ title: praise, subtitle: 'Образ сохранён, очки начислены.' });
       }
+      WebApp.HapticFeedback?.notificationOccurred?.('success');
       setUser((u) =>
         u
           ? {
@@ -158,12 +191,19 @@ export default function App() {
       const rewards = await fetchRewards();
       setPromos(rewards.promos);
     } catch (e: unknown) {
-      const msg =
-        typeof e === 'object' && e && 'response' in e
-          ? (e as { response?: { data?: { reason?: string } } }).response?.data?.reason
-          : null;
-      setLevelMsg(msg ?? 'Условия уровня не выполнены — обновите образ.');
       WebApp.HapticFeedback?.notificationOccurred?.('error');
+      if (axios.isAxiosError(e)) {
+        const data = e.response?.data as { error?: string; expected?: number; reason?: string } | undefined;
+        if (data?.error === 'wrong_level' && typeof data.expected === 'number') {
+          setLevelMsg(`Сначала завершите уровень ${data.expected}.`);
+          return;
+        }
+        if (data?.reason) {
+          setLevelMsg(data.reason);
+          return;
+        }
+      }
+      setLevelMsg('Не удалось отправить результат. Проверьте сеть и попробуйте снова.');
     }
   };
 
@@ -205,9 +245,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-4 p-8">
-        <PodruzhkaLogo className="h-16 w-16 animate-pulse rounded-2xl shadow-soft ring-1 ring-white/60" />
-        <p className="text-sm font-medium text-podrygka-deep/70">Загружаем ваш beauty-профиль…</p>
+      <div className="flex min-h-full flex-col items-center justify-center gap-5 bg-gradient-to-b from-[#FFF5FA] to-white p-8">
+        <PodruzhkaLogo className="h-28 w-28 animate-pulse rounded-[1.75rem] shadow-card ring-2 ring-[#FF78B4]/35" />
+        <p className="text-center text-sm font-semibold text-podrygka-deep/80">Загружаем ваш beauty-профиль…</p>
       </div>
     );
   }
@@ -260,7 +300,7 @@ export default function App() {
           <ul className="mt-6 space-y-2 text-left text-sm text-podrygka-deep/75">
             <li>✓ Слойный редактор лица, макияжа и наряда</li>
             <li>✓ Задания на стиль и креатив</li>
-            <li>✓ Промокоды каждые 5 уровней</li>
+            <li>✓ Промокоды FREE5, FREE10, FREE15, FREE20, FREE25 на этапах 5–25</li>
           </ul>
           <button type="button" className="btn-primary mt-10 w-full" onClick={onStartWelcome}>
             Начать
@@ -271,7 +311,16 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-full flex-col pb-24">
+    <div className="relative flex min-h-full flex-col pb-24">
+      {toast && (
+        <div
+          role="status"
+          className="fixed left-1/2 top-[max(0.75rem,env(safe-area-inset-top))] z-[100] w-[min(92vw,22rem)] -translate-x-1/2 rounded-2xl border border-podrygka-pink/40 bg-white/95 px-4 py-3 text-center shadow-card backdrop-blur-md"
+        >
+          <p className="font-display text-base font-bold text-podrygka-deep">{toast.title}</p>
+          {toast.subtitle && <p className="mt-1 text-sm text-podrygka-deep/75">{toast.subtitle}</p>}
+        </div>
+      )}
       <header className="sticky top-0 z-30 border-b border-white/40 bg-white/70 px-5 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -391,7 +440,8 @@ export default function App() {
           <div className="space-y-4">
             <h2 className="font-display text-xl font-bold text-podrygka-deep">Мои награды</h2>
             <p className="text-sm text-podrygka-deep/75">
-              Промокоды за уровни 5, 10, 15 и 20. Формат: PODRYGKA-XXXX
+              За уровни 5, 10, 15, 20 и 25 вы получаете фиксированные коды: FREE5, FREE10, FREE15, FREE20, FREE25 (скидка в
+              процентах совпадает с числом). Администратор может добавлять отдельные коды PODRYGKA-…
             </p>
             <div className="space-y-3">
               {promos.length === 0 && (

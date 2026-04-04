@@ -47,6 +47,13 @@ export const defaultAvatarState = (): AvatarState => ({
   casualJewelry: 'none',
 });
 
+/** Три базовых тона; старые porcelain/tan маппятся сюда. */
+export function normalizeSkinToneId(raw: string): 'light' | 'medium' | 'deep' {
+  if (raw === 'light' || raw === 'porcelain') return 'light';
+  if (raw === 'deep' || raw === 'tan') return 'deep';
+  return 'medium';
+}
+
 function extractFace(o: Record<string, unknown>, d: AvatarState): Pick<
   AvatarState,
   | 'partEars'
@@ -59,6 +66,7 @@ function extractFace(o: Record<string, unknown>, d: AvatarState): Pick<
   | 'partMouth'
   | 'skinTone'
 > {
+  const st = typeof o.skinTone === 'string' ? o.skinTone : d.skinTone;
   return {
     partEars: typeof o.partEars === 'string' ? o.partEars : d.partEars,
     partDecorFace: typeof o.partDecorFace === 'string' ? o.partDecorFace : d.partDecorFace,
@@ -68,7 +76,7 @@ function extractFace(o: Record<string, unknown>, d: AvatarState): Pick<
     partPupil: typeof o.partPupil === 'string' ? o.partPupil : d.partPupil,
     partNose: typeof o.partNose === 'string' ? o.partNose : d.partNose,
     partMouth: typeof o.partMouth === 'string' ? o.partMouth : d.partMouth,
-    skinTone: typeof o.skinTone === 'string' ? o.skinTone : d.skinTone,
+    skinTone: normalizeSkinToneId(st),
   };
 }
 

@@ -155,7 +155,7 @@ router.post('/admin/promo/generate', adminGuard, async (req: Request, res: Respo
     const suffix = crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 6);
     const code = `PODRYGKA-${suffix}`;
     try {
-      await PromoCodeModel.create({ code, discount, used: false });
+      await PromoCodeModel.create({ code, discount, used: false, user_id: 0 });
       codes.push(code);
     } catch {
       i--;

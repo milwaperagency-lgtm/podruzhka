@@ -1,31 +1,32 @@
-import crypto from 'node:crypto';
 import { PromoCodeModel } from '../models/PromoCode.js';
-import { PROMO_AT_LEVEL } from '../constants/levels.js';
 
-function randomSuffix(): string {
-  return crypto.randomBytes(3).toString('hex').toUpperCase().slice(0, 4);
-}
+/** Фиксированные промокоды за этапы (один набор на пользователя). */
+export const MILESTONE_PROMO: Record<number, { code: string; discount: number }> = {
+  5: { code: 'FREE5', discount: 5 },
+  10: { code: 'FREE10', discount: 10 },
+  15: { code: 'FREE15', discount: 15 },
+  20: { code: 'FREE20', discount: 20 },
+  25: { code: 'FREE25', discount: 25 },
+};
 
 export async function createPromoForLevel(
   telegramId: number,
   level: number
 ): Promise<{ code: string; discount: number } | null> {
-  const discount = PROMO_AT_LEVEL[level];
-  if (!discount) return null;
+  const m = MILESTONE_PROMO[level];
+  if (!m) return null;
 
-  for (let i = 0; i < 8; i++) {
-    const code = `PODRYGKA-${randomSuffix()}`;
-    try {
-      await PromoCodeModel.create({
-        code,
-        discount,
-        user_id: telegramId,
-        source_level: level,
-      });
-      return { code, discount };
-    } catch {
-      /* duplicate code */
-    }
+  const existing = await PromoCodeModel.findOne({ user_id: telegramId, code: m.code }).lean();
+  if (existing) {
+    return { code: m.code, discount: m.discount };
   }
-  throw new Error('promo_generation_failed');
+
+  await PromoCodeModel.create({
+    code: m.code,
+    discount: m.discount,
+    user_id: telegramId,
+    source_level: level,
+    used: false,
+  });
+  return { code: m.code, discount: m.discount };
 }

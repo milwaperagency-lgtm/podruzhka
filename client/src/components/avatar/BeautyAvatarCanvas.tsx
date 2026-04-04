@@ -15,6 +15,7 @@ import {
   topSrc,
   underwearSrc,
 } from '@/components/avatar/casualPack';
+import { skinBaseSrc, L_SKIN } from '@/components/avatar/skinPack';
 import {
   baseWhiteEyesSrc,
   collectFacePartUrls,
@@ -43,12 +44,14 @@ export interface BeautyAvatarCanvasProps {
 }
 
 /**
- * Слои: обувь → бельё → низ/верх или платье → жакет → зад волос → лицо → чёлка → украшение.
- * Лицо — parts/; тело — casual/*.webp.
+ * Слои: фон → база кожи → обувь → бельё → низ/верх/платье → жакет →
+ * зад волос (поверх одежды, чтобы длина не «обрезалась» воротом) →
+ * части лица → чёлка → украшение.
  */
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {
     const tone = state.hairTone === 'b' ? 'b' : 'a';
+    const skinU = skinBaseSrc(state);
     const shoeU = shoeSrc(state.casualShoes);
     const undU = underwearSrc(state.casualUnderwear);
     const botU = bottomSrc(state.casualBottom);
@@ -61,8 +64,8 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
 
     const faceUrls = useMemo(() => collectFacePartUrls(state), [state]);
     const urls = useMemo(
-      () => [...collectCasualPreloadUrls(state), ...faceUrls],
-      [state, faceUrls]
+      () => [skinU, ...collectCasualPreloadUrls(state), ...faceUrls],
+      [state, faceUrls, skinU]
     );
     const images = useLoadedImages(urls);
 
@@ -91,6 +94,17 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             fillLinearGradientEndPoint={{ x: W, y: H }}
             fillLinearGradientColorStops={[0, '#FDE8F2', 0.5, '#FFF5FA', 1, '#E8F5F0']}
           />
+
+          {imgGet(images, skinU) && (
+            <KonvaImage
+              image={imgGet(images, skinU)!}
+              x={L_SKIN.x}
+              y={L_SKIN.y}
+              width={L_SKIN.w}
+              height={L_SKIN.h}
+              listening={false}
+            />
+          )}
 
           {imgGet(images, shoeU) && (
             <KonvaImage
@@ -153,6 +167,7 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             />
           )}
 
+          {/* Зад волос — над одеждой, иначе ворот «срезает» пряди */}
           {imgGet(images, hbU) && (
             <KonvaImage
               image={imgGet(images, hbU)!}
