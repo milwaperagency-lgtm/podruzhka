@@ -10,11 +10,8 @@
     "dev:server": "cd server && npm run dev",
     "build": "cd client && npm run build",
     "build:server": "cd server && npm run build",
-    "copy:generated-assets": "node scripts/copy-generated-avatar-assets.cjs",
-    "copy:skin-bases": "node scripts/copy-skin-bases.cjs",
-    "copy:logo": "node scripts/copy-logo.cjs",
-    "copy:face-parts": "node scripts/copy-face-parts.cjs",
-    "copy:avatar-assets": "node scripts/copy-logo.cjs && node scripts/copy-face-parts.cjs && node scripts/copy-skin-bases.cjs && node scripts/copy-generated-avatar-assets.cjs"
+    "copy:assets": "node scripts/copy-assets-bundle.cjs",
+    "copy:avatar-assets": "npm run copy:assets"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

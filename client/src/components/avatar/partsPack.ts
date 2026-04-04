@@ -1,6 +1,6 @@
 /**
  * Модульные части лица из `public/avatar-assets/parts/`
- * (копия набора из Downloads: ears, eyes, pupils, nose, mouth, eyebrows, eyelashes, decor_face, base_white_eyes).
+ * (копируются `npm run copy:assets` из ASSETS_BUNDLE, по умолчанию Downloads/assets/assets).
  */
 import type { AvatarState } from '@/types';
 import { publicUrl } from '@/lib/publicUrl';

@@ -1,6 +1,6 @@
 /**
- * Опции редактора: части лица — файлы в `avatar-assets/parts/`,
- * одежда/волосы — в `avatar-assets/generated/` (если скопированы).
+ * Опции редактора: части лица — `avatar-assets/parts/`,
+ * одежда/волосы — `avatar-assets/body/` (копия из набора …/body или …/generated).
  */
 
 function nOpts(n: number, prefix: string): { id: string; label: string }[] {

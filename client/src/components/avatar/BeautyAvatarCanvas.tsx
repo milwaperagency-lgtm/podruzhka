@@ -10,7 +10,7 @@ import {
   L,
   outfitSrc,
   shoeSrc,
-} from '@/components/avatar/generatedPack';
+} from '@/components/avatar/bodyPack';
 import {
   baseWhiteEyesSrc,
   collectFacePartUrls,
@@ -40,7 +40,7 @@ export interface BeautyAvatarCanvasProps {
 
 /**
  * Слои: обувь → одежда → жакет → лицо (база белых глаз → склера → зрачки → нос → рот → брови → ресницы → декор → уши) → волосы → серьги → сумка.
- * Только PNG из `parts/` и `generated/`.
+ * Только PNG из `parts/` и `body/` (набор из ASSETS_BUNDLE).
  */
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {

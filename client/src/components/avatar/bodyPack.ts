@@ -1,11 +1,12 @@
 /**
- * Растровые слои тела / одежды / волос из `avatar-assets/generated/` (опционально, если файлы есть).
- * Лицо собирается из `partsPack.ts`.
+ * Растровые слои тела / одежды / волос из `avatar-assets/body/`
+ * (копируются скриптом copy-assets-bundle.cjs из набора в Downloads/assets/assets/…/body или …/generated).
+ * Лицо — partsPack.ts.
  */
 import type { AvatarState } from '@/types';
 import { publicUrl } from '@/lib/publicUrl';
 
-const BASE = () => publicUrl('avatar-assets/generated');
+const BASE = () => publicUrl('avatar-assets/body');
 
 function hairStyleKey(s: string): 'bob' | 'pony' | 'long' {
   if (s === 'bob') return 'bob';
