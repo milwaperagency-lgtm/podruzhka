@@ -1,5 +1,5 @@
 /**
- * Части лица — `avatar-assets/parts/`; тело — `avatar-assets/casual/`; база кожи — `avatar-assets/skin/`.
+ * Части лица — `avatar-assets/parts/`; тело — `avatar-assets/casual/`; база кожи — `avatar-assets/bases/`.
  */
 
 function nOpts(n: number, labelFn: (i: number) => string): { id: string; label: string }[] {
@@ -52,11 +52,11 @@ export const PART_NOSE = nOpts(6, (i) => `Нос · ${i}`);
 
 export const PART_MOUTH = nOpts(14, (i) => `Губы · ${i}`);
 
-/** Три базовых слоя — см. `avatar-assets/skin/base_*.svg` */
+/** Три PNG-базы кожи — `avatar-assets/bases/base_*.png` */
 export const SKIN_TONES = [
-  { id: 'light', label: 'Светлый тон' },
-  { id: 'medium', label: 'Средний тон' },
-  { id: 'deep', label: 'Тёмный тон' },
+  { id: 'light', label: 'Светлая кожа' },
+  { id: 'medium', label: 'Средняя кожа' },
+  { id: 'deep', label: 'Тёмная кожа' },
 ] as const;
 
 export const HAIR_SETS = nOpts(10, (i) => `Причёска сзади · ${i}`);

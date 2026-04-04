@@ -80,7 +80,15 @@ export function startTelegramBot() {
     );
   });
 
-  bot.launch().then(() => console.log('[bot] Telegraf started'));
+  bot
+    .launch()
+    .then(() => console.log('[bot] Telegraf started'))
+    .catch((err: unknown) => {
+      console.error(
+        '[bot] Telegraf не запустился (API продолжает работать). Частая причина — 409: второй процесс с тем же BOT_TOKEN (локальный dev, другой контейнер). Остановите дубликат или переведите бота на webhook.',
+        err
+      );
+    });
   process.once('SIGINT', () => bot.stop('SIGINT'));
   process.once('SIGTERM', () => bot.stop('SIGTERM'));
 }

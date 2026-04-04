@@ -33,7 +33,7 @@ export const defaultAvatarState = (): AvatarState => ({
   partPupil: '1a',
   partNose: '1',
   partMouth: '1',
-  skinTone: 'medium',
+  skinTone: 'light',
   hairSet: '1',
   hairTone: 'a',
   hairBangs: '1',

@@ -108,7 +108,7 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
             <OptionRow label="Нос">
               <ChipSelect value={value.partNose} onChange={(v) => patch({ partNose: v })} options={PART_NOSE} />
             </OptionRow>
-            <OptionRow label="База: тон кожи (под всеми слоями)">
+            <OptionRow label="Тон кожи (база тела)">
               <ChipSelect value={value.skinTone} onChange={(v) => patch({ skinTone: v })} options={[...SKIN_TONES]} />
             </OptionRow>
           </div>
