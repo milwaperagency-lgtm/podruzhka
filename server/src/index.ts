@@ -15,11 +15,15 @@ app.get('/health', (_req, res) => {
 });
 
 async function main() {
+  console.log(
+    '[boot] MONGODB_URI from env:',
+    process.env.MONGODB_URI ? 'yes (length ' + process.env.MONGODB_URI.length + ')' : 'NO — will use default localhost from config'
+  );
   await mongoose.connect(MONGODB_URI);
   console.log('[db] connected');
 
-  app.listen(PORT, () => {
-    console.log(`[api] http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[api] listening on 0.0.0.0:${PORT}`);
   });
 
   startTelegramBot();

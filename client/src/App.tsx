@@ -17,6 +17,20 @@ import AvatarEditor from '@/components/AvatarEditor';
 const CHANNEL = import.meta.env.VITE_TELEGRAM_CHANNEL ?? 'https://t.me/podruzhkahse';
 const BOT_LINK = import.meta.env.VITE_TELEGRAM_BOT ?? 'https://t.me/podruzhkahse_bot';
 
+/** Логотип Подружка из `client/public/podruzhka-logo.png` */
+function PodruzhkaLogo({ className = '' }: { className?: string }) {
+  return (
+    <img
+      src="/podruzhka-logo.png"
+      alt="Подружка"
+      width={120}
+      height={120}
+      decoding="async"
+      className={`select-none object-contain ${className}`}
+    />
+  );
+}
+
 type Tab = 'home' | 'avatar' | 'levels' | 'rewards' | 'profile';
 
 function BottomNav({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
@@ -187,7 +201,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-4 p-8">
-        <div className="h-14 w-14 animate-pulse rounded-full bg-gradient-to-br from-podrygka-pink to-podrygka-rose shadow-soft" />
+        <PodruzhkaLogo className="h-16 w-16 animate-pulse rounded-2xl shadow-soft ring-1 ring-white/60" />
         <p className="text-sm font-medium text-podrygka-deep/70">Загружаем ваш beauty-профиль…</p>
       </div>
     );
@@ -196,6 +210,7 @@ export default function App() {
   if (error) {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-4 p-8 text-center">
+        <PodruzhkaLogo className="mx-auto h-14 w-14 rounded-2xl opacity-90 shadow-soft" />
         <p className="text-podrygka-deep">{error}</p>
       </div>
     );
@@ -205,6 +220,9 @@ export default function App() {
     return (
       <div className="flex min-h-full flex-col px-6 pb-28 pt-12">
         <div className="glass-panel p-8 text-center shadow-soft">
+          <div className="mb-6 flex justify-center">
+            <PodruzhkaLogo className="h-20 w-20 rounded-2xl shadow-card ring-1 ring-podrygka-rose/30" />
+          </div>
           <p className="font-display text-2xl font-bold text-podrygka-deep">Подписка на канал</p>
           <p className="mt-4 text-podrygka-deep/80">
             Чтобы играть в Beauty Avatar Challenge, подпишитесь на наш Telegram-канал.
@@ -227,8 +245,11 @@ export default function App() {
       <div className="flex min-h-full flex-col justify-center px-6 pb-24">
         <div className="glass-panel relative overflow-hidden p-8 shadow-soft">
           <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-podrygka-rose/40 blur-2xl" />
-          <p className="font-display text-3xl font-bold text-podrygka-deep">Beauty Avatar Challenge</p>
-          <p className="mt-4 text-lg text-podrygka-deep/85">
+          <div className="mb-6 flex justify-center">
+            <PodruzhkaLogo className="h-24 w-24 rounded-2xl shadow-card ring-2 ring-white/80" />
+          </div>
+          <p className="text-center font-display text-3xl font-bold text-podrygka-deep">Beauty Avatar Challenge</p>
+          <p className="mt-4 text-center text-lg text-podrygka-deep/85">
             Создай идеальный образ, проходи уровни и получай промокоды Подружка.
           </p>
           <ul className="mt-6 space-y-2 text-left text-sm text-podrygka-deep/75">
@@ -248,9 +269,12 @@ export default function App() {
     <div className="flex min-h-full flex-col pb-24">
       <header className="sticky top-0 z-30 border-b border-white/40 bg-white/70 px-5 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-podrygka-pink">Подружка</p>
-            <h1 className="font-display text-xl font-bold text-podrygka-deep">Beauty Avatar</h1>
+          <div className="flex min-w-0 items-center gap-3">
+            <PodruzhkaLogo className="h-11 w-11 shrink-0 rounded-xl shadow-sm ring-1 ring-podrygka-rose/20" />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wider text-podrygka-pink">Подружка</p>
+              <h1 className="font-display text-xl font-bold text-podrygka-deep">Beauty Avatar</h1>
+            </div>
           </div>
           <div className="chip">{user?.points ?? 0} очков</div>
         </div>
