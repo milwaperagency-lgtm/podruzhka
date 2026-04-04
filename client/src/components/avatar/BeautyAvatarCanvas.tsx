@@ -1,7 +1,8 @@
-import { forwardRef, useMemo } from 'react';
+import { forwardRef, useEffect, useMemo, useState } from 'react';
 import type Konva from 'konva';
-import { Stage, Layer, Group, Ellipse, Line, Arc, Rect } from 'react-konva';
+import { Stage, Layer, Group, Ellipse, Line, Arc, Rect, Image as KonvaImage } from 'react-konva';
 import type { AvatarState } from '@/types';
+import { hairRasterSrc } from '@/components/avatar/hairAssets';
 
 const W = 320;
 const H = 420;
@@ -72,6 +73,9 @@ export interface BeautyAvatarCanvasProps {
   state: AvatarState;
 }
 
+const RASTER_HAIR_W = 235;
+const RASTER_HAIR_Y = 44;
+
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {
     const cx = W / 2;
@@ -89,13 +93,38 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
       return { hw, hh };
     }, [state.hairStyle]);
 
+    const rasterHairUrl = hairRasterSrc(state);
+    const [hairImg, setHairImg] = useState<HTMLImageElement | null>(null);
+    useEffect(() => {
+      if (!rasterHairUrl) {
+        setHairImg(null);
+        return;
+      }
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => setHairImg(img);
+      img.onerror = () => setHairImg(null);
+      img.src = rasterHairUrl;
+    }, [rasterHairUrl]);
+
+    const rasterHairDims = useMemo(() => {
+      if (!hairImg?.width) return { w: RASTER_HAIR_W, h: 180 };
+      const w = RASTER_HAIR_W;
+      const h = (hairImg.height / hairImg.width) * w;
+      return { w, h };
+    }, [hairImg]);
+
+    const useRasterHair = Boolean(rasterHairUrl && hairImg);
+
     return (
       <Stage width={W} height={H} ref={ref}>
         <Layer listening={false}>
           <Rect x={0} y={0} width={W} height={H} cornerRadius={24} fillLinearGradientStartPoint={{ x: 0, y: 0 }} fillLinearGradientEndPoint={{ x: W, y: H }} fillLinearGradientColorStops={[0, '#FDE8F2', 0.5, '#FFF5FA', 1, '#E8F5F0']} />
 
-          {/* Hair back */}
-          <Ellipse x={cx} y={140} radiusX={hairBack.hw} radiusY={hairBack.hh} fill={hair} opacity={0.95} />
+          {/* Hair back (векторная заглушка, если нет PNG) */}
+          {!useRasterHair && (
+            <Ellipse x={cx} y={140} radiusX={hairBack.hw} radiusY={hairBack.hh} fill={hair} opacity={0.95} />
+          )}
 
           {/* Shoulders / top */}
           <Group y={neckY}>
@@ -202,8 +231,20 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             opacity={state.lipstick === 'none' ? 0.55 : 0.95}
           />
 
-          {/* Hair front */}
-          {state.hairStyle !== 'pixie' && (
+          {/* Растровая причёска (прозрачное «окно» под лицо) */}
+          {useRasterHair && hairImg && (
+            <KonvaImage
+              image={hairImg}
+              x={cx - rasterHairDims.w / 2}
+              y={RASTER_HAIR_Y}
+              width={rasterHairDims.w}
+              height={rasterHairDims.h}
+              listening={false}
+            />
+          )}
+
+          {/* Hair front — вектор, если PNG нет */}
+          {!useRasterHair && state.hairStyle !== 'pixie' && (
             <Group>
               <Ellipse x={cx - 55} y={125} radiusX={38} radiusY={48} fill={hair} />
               <Ellipse x={cx + 55} y={125} radiusX={38} radiusY={48} fill={hair} />
@@ -215,7 +256,7 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
               )}
             </Group>
           )}
-          {state.hairStyle === 'pixie' && (
+          {!useRasterHair && state.hairStyle === 'pixie' && (
             <Ellipse x={cx} y={128} radiusX={78} radiusY={40} fill={hair} />
           )}
 
