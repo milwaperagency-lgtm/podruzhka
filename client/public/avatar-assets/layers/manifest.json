@@ -1,0 +1,506 @@
+{
+  "source": "client\\public\\avatar-assets\\sheet.png",
+  "split": {
+    "mode": "chroma",
+    "chroma_threshold": 12,
+    "min_area": 500,
+    "max_area": 120000
+  },
+  "sprites": [
+    {
+      "file": "avatar-assets/layers/sprite_01.png",
+      "index": 1,
+      "area": 3132,
+      "bbox_sheet": [
+        177,
+        64,
+        270,
+        148
+      ],
+      "center_sheet": [
+        219.43071519795657,
+        104.34546615581098
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_02.png",
+      "index": 2,
+      "area": 3427,
+      "bbox_sheet": [
+        348,
+        64,
+        443,
+        146
+      ],
+      "center_sheet": [
+        398.10563174788444,
+        104.8978698570178
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_03.png",
+      "index": 3,
+      "area": 3316,
+      "bbox_sheet": [
+        491,
+        64,
+        588,
+        147
+      ],
+      "center_sheet": [
+        534.9430036188179,
+        105.0832328106152
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_04.png",
+      "index": 4,
+      "area": 2789,
+      "bbox_sheet": [
+        36,
+        80,
+        135,
+        146
+      ],
+      "center_sheet": [
+        84.32628182144137,
+        109.4467551093582
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_05.png",
+      "index": 5,
+      "area": 2779,
+      "bbox_sheet": [
+        659,
+        88,
+        766,
+        145
+      ],
+      "center_sheet": [
+        711.5897804965815,
+        115.74127383951061
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_06.png",
+      "index": 6,
+      "area": 2722,
+      "bbox_sheet": [
+        888,
+        88,
+        992,
+        145
+      ],
+      "center_sheet": [
+        940.334680382072,
+        115.87545922116091
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_07.png",
+      "index": 7,
+      "area": 2925,
+      "bbox_sheet": [
+        773,
+        88,
+        883,
+        145
+      ],
+      "center_sheet": [
+        828.1374358974359,
+        116.1511111111111
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_08.png",
+      "index": 8,
+      "area": 3418,
+      "bbox_sheet": [
+        173,
+        170,
+        269,
+        253
+      ],
+      "center_sheet": [
+        218.19192510239907,
+        210.02282036278527
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_09.png",
+      "index": 9,
+      "area": 3358,
+      "bbox_sheet": [
+        34,
+        170,
+        135,
+        253
+      ],
+      "center_sheet": [
+        85.1617033948779,
+        210.21054198927933
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_10.png",
+      "index": 10,
+      "area": 3482,
+      "bbox_sheet": [
+        484,
+        170,
+        588,
+        253
+      ],
+      "center_sheet": [
+        533.7851809304997,
+        210.4213095921884
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_11.png",
+      "index": 11,
+      "area": 3481,
+      "bbox_sheet": [
+        348,
+        170,
+        442,
+        253
+      ],
+      "center_sheet": [
+        397.8316575696639,
+        210.73743177247917
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_12.png",
+      "index": 12,
+      "area": 2778,
+      "bbox_sheet": [
+        658,
+        190,
+        765,
+        246
+      ],
+      "center_sheet": [
+        711.5172786177105,
+        217.0381569474442
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_13.png",
+      "index": 13,
+      "area": 2722,
+      "bbox_sheet": [
+        888,
+        189,
+        992,
+        246
+      ],
+      "center_sheet": [
+        940.1847905951506,
+        217.05253490080824
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_14.png",
+      "index": 14,
+      "area": 2857,
+      "bbox_sheet": [
+        774,
+        190,
+        883,
+        246
+      ],
+      "center_sheet": [
+        827.837591879594,
+        217.24501225061252
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_15.png",
+      "index": 15,
+      "area": 2427,
+      "bbox_sheet": [
+        879,
+        340,
+        959,
+        406
+      ],
+      "center_sheet": [
+        917.6608982282653,
+        371.3564070869386
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_16.png",
+      "index": 16,
+      "area": 1488,
+      "bbox_sheet": [
+        836,
+        341,
+        890,
+        420
+      ],
+      "center_sheet": [
+        862.7983870967741,
+        381.33266129032256
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_17.png",
+      "index": 17,
+      "area": 8533,
+      "bbox_sheet": [
+        372,
+        310,
+        526,
+        491
+      ],
+      "center_sheet": [
+        449.4099378881988,
+        391.0624633774757
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_18.png",
+      "index": 18,
+      "area": 13177,
+      "bbox_sheet": [
+        191,
+        307,
+        339,
+        492
+      ],
+      "center_sheet": [
+        265.27813614631555,
+        399.5886013508386
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_19.png",
+      "index": 19,
+      "area": 13432,
+      "bbox_sheet": [
+        18,
+        307,
+        166,
+        493
+      ],
+      "center_sheet": [
+        92.33926444312091,
+        402.01898451459203
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_20.png",
+      "index": 20,
+      "area": 15854,
+      "bbox_sheet": [
+        628,
+        307,
+        817,
+        541
+      ],
+      "center_sheet": [
+        724.6995710861612,
+        414.8570076952189
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_21.png",
+      "index": 21,
+      "area": 746,
+      "bbox_sheet": [
+        500,
+        404,
+        540,
+        490
+      ],
+      "center_sheet": [
+        522.7345844504022,
+        459.56300268096516
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_22.png",
+      "index": 22,
+      "area": 2878,
+      "bbox_sheet": [
+        945,
+        393,
+        1020,
+        534
+      ],
+      "center_sheet": [
+        976.4457956914524,
+        471.96212647671996
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_23.png",
+      "index": 23,
+      "area": 864,
+      "bbox_sheet": [
+        930,
+        453,
+        971,
+        535
+      ],
+      "center_sheet": [
+        950.7708333333334,
+        498.80324074074076
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_24.png",
+      "index": 24,
+      "area": 2364,
+      "bbox_sheet": [
+        830,
+        571,
+        1000,
+        692
+      ],
+      "center_sheet": [
+        913.3468697123519,
+        629.1806260575296
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_25.png",
+      "index": 25,
+      "area": 18948,
+      "bbox_sheet": [
+        194,
+        544,
+        368,
+        707
+      ],
+      "center_sheet": [
+        280.0200548870593,
+        631.076894659067
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_26.png",
+      "index": 26,
+      "area": 21296,
+      "bbox_sheet": [
+        3,
+        540,
+        187,
+        706
+      ],
+      "center_sheet": [
+        94.17557287753569,
+        631.3672051089407
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_27.png",
+      "index": 27,
+      "area": 21539,
+      "bbox_sheet": [
+        371,
+        541,
+        558,
+        706
+      ],
+      "center_sheet": [
+        463.3029388551,
+        631.7783091137007
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_28.png",
+      "index": 28,
+      "area": 14207,
+      "bbox_sheet": [
+        624,
+        572,
+        795,
+        694
+      ],
+      "center_sheet": [
+        708.8516928274794,
+        635.4687829942986
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_29.png",
+      "index": 29,
+      "area": 19602,
+      "bbox_sheet": [
+        625,
+        761,
+        792,
+        963
+      ],
+      "center_sheet": [
+        708.144475053566,
+        854.269717375778
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_30.png",
+      "index": 30,
+      "area": 20060,
+      "bbox_sheet": [
+        828,
+        762,
+        997,
+        968
+      ],
+      "center_sheet": [
+        911.9360418743769,
+        855.5741774675972
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_31.png",
+      "index": 31,
+      "area": 27829,
+      "bbox_sheet": [
+        408,
+        765,
+        589,
+        978
+      ],
+      "center_sheet": [
+        496.40763232599085,
+        877.1024470875706
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_32.png",
+      "index": 32,
+      "area": 28535,
+      "bbox_sheet": [
+        230,
+        765,
+        414,
+        977
+      ],
+      "center_sheet": [
+        319.63073418608724,
+        877.5718240756966
+      ]
+    },
+    {
+      "file": "avatar-assets/layers/sprite_33.png",
+      "index": 33,
+      "area": 31334,
+      "bbox_sheet": [
+        27,
+        761,
+        233,
+        980
+      ],
+      "center_sheet": [
+        129.2319525116487,
+        879.8457905150955
+      ]
+    }
+  ]
+}
