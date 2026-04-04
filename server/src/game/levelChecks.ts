@@ -1,7 +1,12 @@
 import type { AvatarState } from '../constants/avatar.js';
 import { DEFAULT_AVATAR, diffCount, hasAnyMakeup, makeupLayerCount } from '../constants/avatar.js';
 
-/** Яркие варианты рта (условно «помада»). */
+/** Подстройте под арт набора: индексы файлов shoes/N.webp */
+const HEELS = new Set(['7', '8', '9', '10']);
+const SNEAKERS = new Set(['1', '2', '3', '4', '5']);
+/** «Casual» верх для уровня 4 */
+const CASUAL_TOPS_CASUAL = new Set(['1', '2', '3', '4', '5', '6']);
+
 const BOLD_MOUTH = ['11', '12', '13', '14'];
 const RED_MOUTH = ['12', '13', '14'];
 const NUDE_MOUTH = ['1', '2', '3'];
@@ -17,24 +22,23 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
         ? { ok: true }
         : { ok: false, reason: 'Добавьте макияж (декор лица, ресницы, брови или другой рот).' };
     case 3:
-      if (s.dress === 'none') return { ok: false, reason: 'Выберите платье.' };
-      if (s.shoes !== 'heels_black' && s.shoes !== 'heels_nude') return { ok: false, reason: 'Нужны каблуки.' };
+      if (s.outfitMode !== 'dress') return { ok: false, reason: 'Выберите режим «Платье».' };
+      if (!HEELS.has(s.casualShoes)) return { ok: false, reason: 'Нужны каблуки (обувь 7–10).' };
       if (!BOLD_MOUTH.includes(s.partMouth)) return { ok: false, reason: 'Выберите более выразительные губы.' };
       return { ok: true };
     case 4:
-      if (s.outfitMode !== 'top') return { ok: false, reason: 'Выберите режим «Топ» (без платья).' };
-      if (!['tee_white', 'tee_blush', 'hoodie', 'crop_top'].includes(s.top))
-        return { ok: false, reason: 'Выберите casual-топ.' };
-      if (s.shoes !== 'sneakers_white' && s.shoes !== 'sneakers_pastel')
-        return { ok: false, reason: 'Нужны кроссовки.' };
+      if (s.outfitMode !== 'separate') return { ok: false, reason: 'Выберите режим «Верх + низ».' };
+      if (!CASUAL_TOPS_CASUAL.has(s.casualTop)) return { ok: false, reason: 'Выберите casual-верх (1–6).' };
+      if (!SNEAKERS.has(s.casualShoes)) return { ok: false, reason: 'Нужны кроссовки (1–5).' };
       return { ok: true };
     case 5: {
       if (!hasAnyMakeup(s)) return { ok: false, reason: 'Добавьте макияж.' };
       const outfitOk =
-        s.dress !== 'none' || (s.top !== 'tee_white' && s.outfitMode === 'top') || s.jacket !== 'none';
-      if (!outfitOk) return { ok: false, reason: 'Соберите наряд (платье, не базовый топ или жакет).' };
-      if (s.earrings === 'none' && s.bag === 'none')
-        return { ok: false, reason: 'Добавьте аксессуар (серьги или сумку).' };
+        s.outfitMode === 'dress' ||
+        (s.casualTop !== '1' && s.outfitMode === 'separate') ||
+        s.casualJacket !== 'none';
+      if (!outfitOk) return { ok: false, reason: 'Соберите наряд (платье, не базовый верх или жакет).' };
+      if (s.casualJewelry === 'none') return { ok: false, reason: 'Добавьте украшение.' };
       return { ok: true };
     }
     case 6: {
@@ -45,29 +49,31 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
       return pastel ? { ok: true } : { ok: false, reason: 'Используйте розовые/пастельные акценты (зрачок b/c, декор).' };
     }
     case 7:
-      return s.hairStyle !== DEFAULT_AVATAR.hairStyle || s.hairColor !== DEFAULT_AVATAR.hairColor
+      return s.hairSet !== DEFAULT_AVATAR.hairSet ||
+        s.hairBangs !== DEFAULT_AVATAR.hairBangs ||
+        s.hairTone !== DEFAULT_AVATAR.hairTone
         ? { ok: true }
-        : { ok: false, reason: 'Смените причёску и/или цвет волос.' };
+        : { ok: false, reason: 'Смените причёску, чёлку и/или вариант a/b.' };
     case 8:
       return s.partPupil !== '1a' || s.partEyelashes !== '1' || s.partEyeWhite !== '1'
         ? { ok: true }
         : { ok: false, reason: 'Измените форму глаз, зрачок или ресницы.' };
     case 9:
-      return s.jacket !== 'none' ? { ok: true } : { ok: false, reason: 'Наденьте жакет/накидку.' };
+      return s.casualJacket !== 'none' ? { ok: true } : { ok: false, reason: 'Наденьте жакет.' };
     case 10:
-      return s.bag !== 'none' && s.earrings !== 'none'
+      return s.casualJewelry !== 'none' && s.casualJacket !== 'none'
         ? { ok: true }
-        : { ok: false, reason: 'Нужны и серьги, и сумка.' };
+        : { ok: false, reason: 'Нужны и украшение, и жакет.' };
     case 11:
-      return s.top === 'tee_white' && s.shoes === 'sneakers_white' && NUDE_MOUTH.includes(s.partMouth)
+      return s.casualTop === '1' && s.casualShoes === '1' && NUDE_MOUTH.includes(s.partMouth)
         ? { ok: true }
-        : { ok: false, reason: 'Нейтральный look: белый топ, белые кроссовки, спокойные губы (1–3).' };
+        : { ok: false, reason: 'Нейтральный look: верх 1, обувь 1, спокойные губы (1–3).' };
     case 12:
       return s.partDecorFace !== 'none' && s.partEyelashes !== '1'
         ? { ok: true }
         : { ok: false, reason: 'Добавьте декор лица и не базовые ресницы.' };
     case 13:
-      return s.dress !== 'none' && s.shoes.startsWith('heels') && s.partDecorFace !== 'none'
+      return s.outfitMode === 'dress' && HEELS.has(s.casualShoes) && s.partDecorFace !== 'none'
         ? { ok: true }
         : { ok: false, reason: 'Платье + каблуки + декор лица.' };
     case 14:
@@ -79,23 +85,21 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
         ? { ok: true }
         : { ok: false, reason: 'Акцент на глаза: выразительный зрачок + нейтральные губы.' };
     case 16:
-      return (s.shoes === 'sneakers_white' || s.shoes === 'sneakers_pastel') &&
-        s.outfitMode === 'top' &&
-        hasAnyMakeup(s)
+      return SNEAKERS.has(s.casualShoes) && s.outfitMode === 'separate' && hasAnyMakeup(s)
         ? { ok: true }
-        : { ok: false, reason: 'Кроссовки + топ + лёгкий макияж.' };
+        : { ok: false, reason: 'Кроссовки + верх/низ + лёгкий макияж.' };
     case 17: {
       const glam =
-        s.dress !== 'none' &&
-        s.shoes.startsWith('heels') &&
+        s.outfitMode === 'dress' &&
+        HEELS.has(s.casualShoes) &&
         makeupLayerCount(s) >= 3 &&
         hasAnyMakeup(s);
       return glam ? { ok: true } : { ok: false, reason: 'Платье, каблуки и насыщенный макияж (3+ отличия).' };
     }
     case 18:
-      return s.earrings === 'none' && s.bag === 'none' && hasAnyMakeup(s) && (s.dress !== 'none' || s.jacket !== 'none')
+      return s.casualJewelry === 'none' && hasAnyMakeup(s) && (s.outfitMode === 'dress' || s.casualJacket !== 'none')
         ? { ok: true }
-        : { ok: false, reason: 'Без сумки и серёг, но с макияжем и нарядом.' };
+        : { ok: false, reason: 'Без украшений, но с макияжем и нарядом (платье или жакет).' };
     case 19:
       return diffCount(s, DEFAULT_AVATAR) >= 8
         ? { ok: true }
@@ -103,12 +107,12 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
     case 20: {
       const full =
         hasAnyMakeup(s) &&
-        s.dress !== 'none' &&
-        s.shoes.startsWith('heels') &&
-        s.earrings !== 'none' &&
-        s.bag !== 'none' &&
+        s.outfitMode === 'dress' &&
+        HEELS.has(s.casualShoes) &&
+        s.casualJewelry !== 'none' &&
+        s.casualJacket !== 'none' &&
         makeupLayerCount(s) >= 3;
-      return full ? { ok: true } : { ok: false, reason: 'Финальный look: платье, каблуки, макияж, серьги и сумка.' };
+      return full ? { ok: true } : { ok: false, reason: 'Финальный look: платье, каблуки, макияж, жакет и украшение.' };
     }
     default:
       return { ok: false, reason: 'Неизвестный уровень.' };

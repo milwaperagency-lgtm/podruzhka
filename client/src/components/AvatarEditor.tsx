@@ -2,12 +2,13 @@ import { useCallback, useMemo, useState } from 'react';
 import type Konva from 'konva';
 import type { AvatarState } from '@/types';
 import {
-  BAGS,
-  DRESSES,
-  EARRINGS,
-  HAIR_COLORS,
-  HAIR_STYLES,
-  JACKETS,
+  CASUAL_BOTTOMS,
+  CASUAL_DRESSES,
+  CASUAL_JACKETS,
+  CASUAL_JEWELRY,
+  CASUAL_SHOES,
+  CASUAL_TOPS,
+  CASUAL_UNDERWEAR,
   PART_DECOR_FACE,
   PART_EARS,
   PART_EYEBROWS,
@@ -16,9 +17,10 @@ import {
   PART_MOUTH,
   PART_NOSE,
   PART_PUPILS,
-  SHOES,
+  HAIR_BANGS_OPTS,
+  HAIR_SETS,
+  HAIR_TONES,
   SKIN_TONES,
-  TOPS,
 } from '@/data/avatarOptions';
 import BeautyAvatarCanvas from '@/components/avatar/BeautyAvatarCanvas';
 
@@ -149,11 +151,14 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
       case 'hair':
         return (
           <div className="space-y-4">
-            <OptionRow label="Причёска">
-              <ChipSelect value={value.hairStyle} onChange={(v) => patch({ hairStyle: v })} options={HAIR_STYLES} />
+            <OptionRow label="Причёска (зад)">
+              <ChipSelect value={value.hairSet} onChange={(v) => patch({ hairSet: v })} options={HAIR_SETS} />
             </OptionRow>
-            <OptionRow label="Цвет волос">
-              <ChipSelect value={value.hairColor} onChange={(v) => patch({ hairColor: v })} options={HAIR_COLORS} />
+            <OptionRow label="Вариант волос (a/b)">
+              <ChipSelect value={value.hairTone} onChange={(v) => patch({ hairTone: v })} options={HAIR_TONES} />
+            </OptionRow>
+            <OptionRow label="Чёлка">
+              <ChipSelect value={value.hairBangs} onChange={(v) => patch({ hairBangs: v })} options={HAIR_BANGS_OPTS} />
             </OptionRow>
           </div>
         );
@@ -165,58 +170,76 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
                 <button
                   type="button"
                   className={`rounded-xl px-4 py-2 text-sm font-semibold ${
-                    value.outfitMode === 'top' ? 'btn-primary' : 'btn-secondary'
+                    value.outfitMode === 'separate' ? 'btn-primary' : 'btn-secondary'
                   }`}
-                  onClick={() => patch({ outfitMode: 'top', dress: 'none' })}
+                  onClick={() => patch({ outfitMode: 'separate' })}
                 >
-                  Топ
+                  Верх + низ
                 </button>
                 <button
                   type="button"
                   className={`rounded-xl px-4 py-2 text-sm font-semibold ${
                     value.outfitMode === 'dress' ? 'btn-primary' : 'btn-secondary'
                   }`}
-                  onClick={() =>
-                    patch({
-                      outfitMode: 'dress',
-                      dress: value.dress === 'none' ? 'midi_floral' : value.dress,
-                    })
-                  }
+                  onClick={() => patch({ outfitMode: 'dress' })}
                 >
                   Платье
                 </button>
               </div>
             </OptionRow>
-            {value.outfitMode === 'top' ? (
-              <OptionRow label="Верх">
-                <ChipSelect value={value.top} onChange={(v) => patch({ top: v })} options={TOPS} />
-              </OptionRow>
+            {value.outfitMode === 'separate' ? (
+              <>
+                <OptionRow label="Низ">
+                  <ChipSelect
+                    value={value.casualBottom}
+                    onChange={(v) => patch({ casualBottom: v })}
+                    options={CASUAL_BOTTOMS}
+                  />
+                </OptionRow>
+                <OptionRow label="Верх">
+                  <ChipSelect value={value.casualTop} onChange={(v) => patch({ casualTop: v })} options={CASUAL_TOPS} />
+                </OptionRow>
+              </>
             ) : (
               <OptionRow label="Платье">
-                <ChipSelect value={value.dress} onChange={(v) => patch({ dress: v })} options={DRESSES} />
+                <ChipSelect
+                  value={value.casualDress}
+                  onChange={(v) => patch({ casualDress: v })}
+                  options={CASUAL_DRESSES}
+                />
               </OptionRow>
             )}
-            <OptionRow label="Жакет / накидка">
-              <ChipSelect value={value.jacket} onChange={(v) => patch({ jacket: v })} options={JACKETS} />
+            <OptionRow label="Жакет">
+              <ChipSelect
+                value={value.casualJacket}
+                onChange={(v) => patch({ casualJacket: v })}
+                options={CASUAL_JACKETS}
+              />
+            </OptionRow>
+            <OptionRow label="Бельё">
+              <ChipSelect
+                value={value.casualUnderwear}
+                onChange={(v) => patch({ casualUnderwear: v })}
+                options={CASUAL_UNDERWEAR}
+              />
             </OptionRow>
           </div>
         );
       case 'shoes':
         return (
           <OptionRow label="Обувь">
-            <ChipSelect value={value.shoes} onChange={(v) => patch({ shoes: v })} options={SHOES} />
+            <ChipSelect value={value.casualShoes} onChange={(v) => patch({ casualShoes: v })} options={CASUAL_SHOES} />
           </OptionRow>
         );
       case 'accessories':
         return (
-          <div className="space-y-4">
-            <OptionRow label="Серьги">
-              <ChipSelect value={value.earrings} onChange={(v) => patch({ earrings: v })} options={EARRINGS} />
-            </OptionRow>
-            <OptionRow label="Сумка">
-              <ChipSelect value={value.bag} onChange={(v) => patch({ bag: v })} options={BAGS} />
-            </OptionRow>
-          </div>
+          <OptionRow label="Украшение">
+            <ChipSelect
+              value={value.casualJewelry}
+              onChange={(v) => patch({ casualJewelry: v })}
+              options={CASUAL_JEWELRY}
+            />
+          </OptionRow>
         );
       default:
         return null;

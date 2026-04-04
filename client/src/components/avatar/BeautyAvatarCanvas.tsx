@@ -3,14 +3,18 @@ import type Konva from 'konva';
 import { Stage, Layer, Rect, Image as KonvaImage } from 'react-konva';
 import type { AvatarState } from '@/types';
 import {
-  bagSrc,
-  earringSrc,
-  hairSrc,
-  jacketOverlaySrc,
+  bottomSrc,
+  collectCasualPreloadUrls,
+  dressSrc,
+  hairBackSrc,
+  hairBangsSrc,
+  jacketSrc,
+  jewelrySrc,
   L,
-  outfitSrc,
   shoeSrc,
-} from '@/components/avatar/bodyPack';
+  topSrc,
+  underwearSrc,
+} from '@/components/avatar/casualPack';
 import {
   baseWhiteEyesSrc,
   collectFacePartUrls,
@@ -39,32 +43,27 @@ export interface BeautyAvatarCanvasProps {
 }
 
 /**
- * Слои: обувь → одежда → жакет → лицо (база белых глаз → склера → зрачки → нос → рот → брови → ресницы → декор → уши) → волосы → серьги → сумка.
- * Только PNG из `parts/` и `body/` (набор из ASSETS_BUNDLE).
+ * Слои: обувь → бельё → низ/верх или платье → жакет → зад волос → лицо → чёлка → украшение.
+ * Лицо — parts/; тело — casual/*.webp.
  */
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {
-    const shoeU = shoeSrc(state);
-    const outfitU = outfitSrc(state);
-    const jackU = jacketOverlaySrc(state);
-    const hairU = hairSrc(state);
-    const earU = earringSrc(state);
-    const bagU = bagSrc();
+    const tone = state.hairTone === 'b' ? 'b' : 'a';
+    const shoeU = shoeSrc(state.casualShoes);
+    const undU = underwearSrc(state.casualUnderwear);
+    const botU = bottomSrc(state.casualBottom);
+    const topU = topSrc(state.casualTop);
+    const dressU = dressSrc(state.casualDress);
+    const jackU = state.casualJacket !== 'none' ? jacketSrc(state.casualJacket) : null;
+    const hbU = hairBackSrc(state.hairSet, tone);
+    const bangsU = hairBangsSrc(state.hairBangs);
+    const jewU = jewelrySrc(state.casualJewelry);
 
     const faceUrls = useMemo(() => collectFacePartUrls(state), [state]);
-    const bodyUrls = useMemo(
-      (): (string | null)[] => [
-        shoeU,
-        outfitU,
-        jackU,
-        hairU,
-        earU,
-        state.bag !== 'none' ? bagU : null,
-      ],
-      [state, shoeU, outfitU, jackU, hairU, earU, bagU]
+    const urls = useMemo(
+      () => [...collectCasualPreloadUrls(state), ...faceUrls],
+      [state, faceUrls]
     );
-
-    const urls = useMemo(() => [...faceUrls, ...bodyUrls.filter(Boolean)], [faceUrls, bodyUrls]);
     const images = useLoadedImages(urls);
 
     const whiteU = baseWhiteEyesSrc();
@@ -76,6 +75,8 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
     const lashU = partEyelashesSrc(state.partEyelashes);
     const decorU = partDecorFaceSrc(state.partDecorFace);
     const earsU = partEarsSrc(state.partEars);
+
+    const separate = state.outfitMode === 'separate';
 
     return (
       <Stage width={W} height={H} ref={ref}>
@@ -94,32 +95,71 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
           {imgGet(images, shoeU) && (
             <KonvaImage
               image={imgGet(images, shoeU)!}
-              x={L.shoes.x}
-              y={L.shoes.y}
-              width={L.shoes.w}
-              height={L.shoes.h}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
               listening={false}
             />
           )}
-
-          {outfitU && imgGet(images, outfitU) && (
+          {imgGet(images, undU) && (
             <KonvaImage
-              image={imgGet(images, outfitU)!}
-              x={L.outfit.x}
-              y={L.outfit.y}
-              width={L.outfit.w}
-              height={L.outfit.h}
+              image={imgGet(images, undU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
               listening={false}
             />
           )}
-
+          {separate && imgGet(images, botU) && (
+            <KonvaImage
+              image={imgGet(images, botU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
+              listening={false}
+            />
+          )}
+          {separate && imgGet(images, topU) && (
+            <KonvaImage
+              image={imgGet(images, topU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
+              listening={false}
+            />
+          )}
+          {!separate && imgGet(images, dressU) && (
+            <KonvaImage
+              image={imgGet(images, dressU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
+              listening={false}
+            />
+          )}
           {jackU && imgGet(images, jackU) && (
             <KonvaImage
               image={imgGet(images, jackU)!}
-              x={L.jacket.x}
-              y={L.jacket.y}
-              width={L.jacket.w}
-              height={L.jacket.h}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
+              listening={false}
+            />
+          )}
+
+          {imgGet(images, hbU) && (
+            <KonvaImage
+              image={imgGet(images, hbU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
               listening={false}
             />
           )}
@@ -215,35 +255,24 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             />
           )}
 
-          {imgGet(images, hairU) && (
+          {imgGet(images, bangsU) && (
             <KonvaImage
-              image={imgGet(images, hairU)!}
-              x={L.hair.x}
-              y={L.hair.y}
-              width={L.hair.w}
-              height={L.hair.h}
+              image={imgGet(images, bangsU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
               listening={false}
             />
           )}
 
-          {state.earrings !== 'none' && earU && imgGet(images, earU) && (
+          {jewU && imgGet(images, jewU) && (
             <KonvaImage
-              image={imgGet(images, earU)!}
-              x={L.earrings.x}
-              y={L.earrings.y}
-              width={L.earrings.w}
-              height={L.earrings.h}
-              listening={false}
-            />
-          )}
-
-          {state.bag !== 'none' && imgGet(images, bagU) && (
-            <KonvaImage
-              image={imgGet(images, bagU)!}
-              x={L.bag.x}
-              y={L.bag.y}
-              width={L.bag.w}
-              height={L.bag.h}
+              image={imgGet(images, jewU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
               listening={false}
             />
           )}

@@ -1,2 +1,2 @@
-/** @deprecated используйте `hairSrc` из `bodyPack.ts` */
-export { hairSrc as hairRasterSrc } from '@/components/avatar/bodyPack';
+/** @deprecated используйте `hairBangsSrc` / `hairBackSrc` из `casualPack.ts` */
+export { hairBangsSrc as hairRasterSrc } from '@/components/avatar/casualPack';

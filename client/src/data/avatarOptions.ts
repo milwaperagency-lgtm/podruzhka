@@ -1,6 +1,6 @@
 /**
- * Опции редактора: части лица — `avatar-assets/parts/`,
- * одежда/волосы — `avatar-assets/body/` (копия из набора …/body или …/generated).
+ * Части лица — `avatar-assets/parts/`; тело — WebP в `avatar-assets/casual/`
+ * (набор feminine casual, см. copy-feminine-casual-outfits.cjs).
  */
 
 function nOpts(n: number, prefix: string): { id: string; label: string }[] {
@@ -52,61 +52,23 @@ export const SKIN_TONES = [
   { id: 'deep', label: 'Глубокий' },
 ];
 
-export const HAIR_STYLES = [
-  { id: 'bob', label: 'Каре' },
-  { id: 'long_wavy', label: 'Длинные волны' },
-  { id: 'long_straight', label: 'Длинные прямые' },
-  { id: 'pony', label: 'Хвост' },
+/** Зад волос 1–10 × вариант a/b (файлы 1a.webp … 10b.webp). */
+export const HAIR_SETS = nOpts(10, 'Волосы (сет)');
+
+export const HAIR_TONES = [
+  { id: 'a' as const, label: 'Вариант A' },
+  { id: 'b' as const, label: 'Вариант B' },
 ];
 
-export const HAIR_COLORS = [
-  { id: 'black', label: 'Чёрный' },
-  { id: 'chestnut', label: 'Каштан' },
-  { id: 'blonde', label: 'Блонд' },
-  { id: 'copper', label: 'Медь' },
-  { id: 'pink', label: 'Розовый' },
-  { id: 'lilac', label: 'Лиловый' },
-];
+export const HAIR_BANGS_OPTS = nOpts(10, 'Чёлка');
 
-export const TOPS = [
-  { id: 'tee_white', label: 'Футболка белая' },
-  { id: 'tee_blush', label: 'Футболка пудра' },
-  { id: 'blouse_silk', label: 'Шёлковая блуза' },
-  { id: 'hoodie', label: 'Худи' },
-  { id: 'crop_top', label: 'Кроп-топ' },
-];
-
-export const DRESSES = [
-  { id: 'none', label: 'Нет' },
-  { id: 'midi_floral', label: 'Миди цветы' },
-  { id: 'cocktail', label: 'Коктейльное' },
-  { id: 'slip', label: 'Комбинация' },
-];
-
-export const JACKETS = [
-  { id: 'none', label: 'Нет' },
-  { id: 'denim', label: 'Джинсовка' },
-];
-
-export const SHOES = [
-  { id: 'sneakers_white', label: 'Кроссовки' },
-  { id: 'sneakers_pastel', label: 'Кроссовки пастель' },
-  { id: 'heels_black', label: 'Каблуки чёрные' },
-  { id: 'heels_nude', label: 'Каблуки нюд' },
-  { id: 'boots', label: 'Ботинки' },
-];
-
-export const EARRINGS = [
-  { id: 'none', label: 'Нет' },
-  { id: 'studs', label: 'Пусеты' },
-  { id: 'hoops', label: 'Кольца' },
-  { id: 'drops', label: 'Подвески' },
-];
-
-export const BAGS = [
-  { id: 'none', label: 'Нет' },
-  { id: 'crossbody', label: 'Сумка' },
-];
+export const CASUAL_TOPS = nOpts(13, 'Верх');
+export const CASUAL_BOTTOMS = nOpts(7, 'Низ');
+export const CASUAL_DRESSES = nOpts(10, 'Платье');
+export const CASUAL_JACKETS = [{ id: 'none', label: 'Нет' }, ...nOpts(10, 'Жакет')];
+export const CASUAL_SHOES = nOpts(10, 'Обувь');
+export const CASUAL_UNDERWEAR = nOpts(10, 'Бельё');
+export const CASUAL_JEWELRY = [{ id: 'none', label: 'Нет' }, ...nOpts(10, 'Украшение')];
 
 export function countActiveCustomizations(
   a: import('@/types').AvatarState,

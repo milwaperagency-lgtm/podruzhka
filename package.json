@@ -11,7 +11,8 @@
     "build": "cd client && npm run build",
     "build:server": "cd server && npm run build",
     "copy:assets": "node scripts/copy-assets-bundle.cjs",
-    "copy:avatar-assets": "npm run copy:assets"
+    "copy:casual-outfits": "node scripts/copy-feminine-casual-outfits.cjs",
+    "copy:avatar-assets": "npm run copy:assets && npm run copy:casual-outfits"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

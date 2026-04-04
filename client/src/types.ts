@@ -8,15 +8,20 @@ export interface AvatarState {
   partNose: string;
   partMouth: string;
   skinTone: string;
-  hairStyle: string;
-  hairColor: string;
-  outfitMode: 'top' | 'dress';
-  top: string;
-  dress: string;
-  jacket: string;
-  shoes: string;
-  earrings: string;
-  bag: string;
+  /** Набор «feminine casual»: причёска 1–10, вариант задних волос a/b */
+  hairSet: string;
+  hairTone: 'a' | 'b';
+  hairBangs: string;
+  /** Платье целиком или верх + низ */
+  outfitMode: 'dress' | 'separate';
+  casualTop: string;
+  casualBottom: string;
+  /** В режиме платья — номер 1–10; в режиме separate не показывается */
+  casualDress: string;
+  casualJacket: string;
+  casualShoes: string;
+  casualUnderwear: string;
+  casualJewelry: string;
 }
 
 export const defaultAvatarState = (): AvatarState => ({
@@ -29,38 +34,32 @@ export const defaultAvatarState = (): AvatarState => ({
   partNose: '1',
   partMouth: '1',
   skinTone: 'medium',
-  hairStyle: 'long_wavy',
-  hairColor: 'chestnut',
-  outfitMode: 'top',
-  top: 'tee_white',
-  dress: 'none',
-  jacket: 'none',
-  shoes: 'sneakers_white',
-  earrings: 'none',
-  bag: 'none',
+  hairSet: '1',
+  hairTone: 'a',
+  hairBangs: '1',
+  outfitMode: 'separate',
+  casualTop: '1',
+  casualBottom: '1',
+  casualDress: '1',
+  casualJacket: 'none',
+  casualShoes: '1',
+  casualUnderwear: '1',
+  casualJewelry: 'none',
 });
 
-export function normalizeAvatarState(raw: Partial<AvatarState> | Record<string, unknown> | null | undefined): AvatarState {
-  const d = defaultAvatarState();
-  if (!raw || typeof raw !== 'object') return d;
-  const o = raw as Record<string, unknown>;
-  if (o.partMouth == null) {
-    return {
-      ...d,
-      skinTone: typeof o.skinTone === 'string' ? o.skinTone : d.skinTone,
-      hairStyle: typeof o.hairStyle === 'string' ? o.hairStyle : d.hairStyle,
-      hairColor: typeof o.hairColor === 'string' ? o.hairColor : d.hairColor,
-      outfitMode: o.outfitMode === 'dress' || o.outfitMode === 'top' ? o.outfitMode : d.outfitMode,
-      top: typeof o.top === 'string' ? o.top : d.top,
-      dress: typeof o.dress === 'string' ? o.dress : d.dress,
-      jacket: typeof o.jacket === 'string' ? o.jacket : d.jacket,
-      shoes: typeof o.shoes === 'string' ? o.shoes : d.shoes,
-      earrings: typeof o.earrings === 'string' ? o.earrings : d.earrings,
-      bag: typeof o.bag === 'string' ? o.bag : d.bag,
-    };
-  }
+function extractFace(o: Record<string, unknown>, d: AvatarState): Pick<
+  AvatarState,
+  | 'partEars'
+  | 'partDecorFace'
+  | 'partEyebrows'
+  | 'partEyelashes'
+  | 'partEyeWhite'
+  | 'partPupil'
+  | 'partNose'
+  | 'partMouth'
+  | 'skinTone'
+> {
   return {
-    ...d,
     partEars: typeof o.partEars === 'string' ? o.partEars : d.partEars,
     partDecorFace: typeof o.partDecorFace === 'string' ? o.partDecorFace : d.partDecorFace,
     partEyebrows: typeof o.partEyebrows === 'string' ? o.partEyebrows : d.partEyebrows,
@@ -70,15 +69,42 @@ export function normalizeAvatarState(raw: Partial<AvatarState> | Record<string, 
     partNose: typeof o.partNose === 'string' ? o.partNose : d.partNose,
     partMouth: typeof o.partMouth === 'string' ? o.partMouth : d.partMouth,
     skinTone: typeof o.skinTone === 'string' ? o.skinTone : d.skinTone,
-    hairStyle: typeof o.hairStyle === 'string' ? o.hairStyle : d.hairStyle,
-    hairColor: typeof o.hairColor === 'string' ? o.hairColor : d.hairColor,
-    outfitMode: o.outfitMode === 'dress' || o.outfitMode === 'top' ? o.outfitMode : d.outfitMode,
-    top: typeof o.top === 'string' ? o.top : d.top,
-    dress: typeof o.dress === 'string' ? o.dress : d.dress,
-    jacket: typeof o.jacket === 'string' ? o.jacket : d.jacket,
-    shoes: typeof o.shoes === 'string' ? o.shoes : d.shoes,
-    earrings: typeof o.earrings === 'string' ? o.earrings : d.earrings,
-    bag: typeof o.bag === 'string' ? o.bag : d.bag,
+  };
+}
+
+export function normalizeAvatarState(raw: Partial<AvatarState> | Record<string, unknown> | null | undefined): AvatarState {
+  const d = defaultAvatarState();
+  if (!raw || typeof raw !== 'object') return d;
+  const o = raw as Record<string, unknown>;
+
+  const face = extractFace(o, d);
+
+  if (o.partMouth == null) {
+    return { ...d, ...face };
+  }
+
+  if (typeof o.casualTop !== 'string') {
+    return { ...d, ...face };
+  }
+
+  const hairTone: 'a' | 'b' = o.hairTone === 'b' ? 'b' : 'a';
+  const outfitMode: 'dress' | 'separate' =
+    o.outfitMode === 'dress' || o.outfitMode === 'separate' ? o.outfitMode : d.outfitMode;
+
+  return {
+    ...d,
+    ...face,
+    hairSet: typeof o.hairSet === 'string' ? o.hairSet : d.hairSet,
+    hairTone,
+    hairBangs: typeof o.hairBangs === 'string' ? o.hairBangs : d.hairBangs,
+    outfitMode,
+    casualTop: typeof o.casualTop === 'string' ? o.casualTop : d.casualTop,
+    casualBottom: typeof o.casualBottom === 'string' ? o.casualBottom : d.casualBottom,
+    casualDress: typeof o.casualDress === 'string' ? o.casualDress : d.casualDress,
+    casualJacket: typeof o.casualJacket === 'string' ? o.casualJacket : d.casualJacket,
+    casualShoes: typeof o.casualShoes === 'string' ? o.casualShoes : d.casualShoes,
+    casualUnderwear: typeof o.casualUnderwear === 'string' ? o.casualUnderwear : d.casualUnderwear,
+    casualJewelry: typeof o.casualJewelry === 'string' ? o.casualJewelry : d.casualJewelry,
   };
 }
 

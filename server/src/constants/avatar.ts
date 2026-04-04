@@ -8,15 +8,17 @@ export interface AvatarState {
   partNose: string;
   partMouth: string;
   skinTone: string;
-  hairStyle: string;
-  hairColor: string;
-  outfitMode: 'top' | 'dress';
-  top: string;
-  dress: string;
-  jacket: string;
-  shoes: string;
-  earrings: string;
-  bag: string;
+  hairSet: string;
+  hairTone: 'a' | 'b';
+  hairBangs: string;
+  outfitMode: 'dress' | 'separate';
+  casualTop: string;
+  casualBottom: string;
+  casualDress: string;
+  casualJacket: string;
+  casualShoes: string;
+  casualUnderwear: string;
+  casualJewelry: string;
 }
 
 export const DEFAULT_AVATAR: AvatarState = {
@@ -29,15 +31,17 @@ export const DEFAULT_AVATAR: AvatarState = {
   partNose: '1',
   partMouth: '1',
   skinTone: 'medium',
-  hairStyle: 'long_wavy',
-  hairColor: 'chestnut',
-  outfitMode: 'top',
-  top: 'tee_white',
-  dress: 'none',
-  jacket: 'none',
-  shoes: 'sneakers_white',
-  earrings: 'none',
-  bag: 'none',
+  hairSet: '1',
+  hairTone: 'a',
+  hairBangs: '1',
+  outfitMode: 'separate',
+  casualTop: '1',
+  casualBottom: '1',
+  casualDress: '1',
+  casualJacket: 'none',
+  casualShoes: '1',
+  casualUnderwear: '1',
+  casualJewelry: 'none',
 };
 
 export function diffCount(a: AvatarState, b: AvatarState): number {
