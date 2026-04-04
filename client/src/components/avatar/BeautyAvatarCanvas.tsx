@@ -1,8 +1,21 @@
-import { forwardRef, useEffect, useMemo, useState } from 'react';
+import { forwardRef, useMemo } from 'react';
 import type Konva from 'konva';
 import { Stage, Layer, Group, Ellipse, Line, Arc, Rect, Image as KonvaImage } from 'react-konva';
 import type { AvatarState } from '@/types';
-import { hairRasterSrc } from '@/components/avatar/hairAssets';
+import {
+  GENERATED,
+  L,
+  browSrc,
+  earringSrc,
+  eyeSrc,
+  hairSrc,
+  jacketOverlaySrc,
+  lipSrc,
+  makeupSrc,
+  outfitSrc,
+  shoeSrc,
+} from '@/components/avatar/generatedPack';
+import { useLoadedImages } from '@/components/avatar/useGeneratedImages';
 
 const W = 320;
 const H = 420;
@@ -24,7 +37,7 @@ const HAIR: Record<string, string> = {
   lilac: '#C4A8E8',
 };
 
-const EYES: Record<string, string> = {
+const EYES_FALLBACK: Record<string, string> = {
   brown: '#5C3D2E',
   green: '#4A8C5C',
   blue: '#4A7AB8',
@@ -32,7 +45,7 @@ const EYES: Record<string, string> = {
   grey: '#8A9099',
 };
 
-const LIP: Record<string, string> = {
+const LIP_FALLBACK: Record<string, string> = {
   none: 'transparent',
   nude: '#D4A090',
   rose: '#E07090',
@@ -69,12 +82,14 @@ function faceScale(shape: string): { rx: number; ry: number } {
   return { rx: 68, ry: 80 };
 }
 
+function imgGet(m: Map<string, HTMLImageElement | null>, url: string | null): HTMLImageElement | null {
+  if (!url) return null;
+  return m.get(url) ?? null;
+}
+
 export interface BeautyAvatarCanvasProps {
   state: AvatarState;
 }
-
-const RASTER_HAIR_W = 235;
-const RASTER_HAIR_Y = 44;
 
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {
@@ -82,186 +97,277 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
     const neckY = 230;
     const { rx, ry } = faceScale(state.faceShape);
     const skin = SKIN[state.skinTone] ?? SKIN.medium;
-    const hair = HAIR[state.hairColor] ?? HAIR.chestnut;
-    const eye = EYES[state.eyeColor] ?? EYES.brown;
-
+    const hairCol = HAIR[state.hairColor] ?? HAIR.chestnut;
+    const eyeFallback = EYES_FALLBACK[state.eyeColor] ?? EYES_FALLBACK.brown;
     const lashLen = state.lashes === 'volume' ? 10 : state.lashes === 'long' ? 8 : 5;
 
-    const hairBack = useMemo(() => {
-      const hw = state.hairStyle === 'pixie' ? 85 : state.hairStyle === 'bob' ? 95 : 115;
-      const hh = state.hairStyle === 'bun' ? 40 : state.hairStyle === 'pony' ? 130 : 150;
-      return { hw, hh };
-    }, [state.hairStyle]);
+    const lipUrl = lipSrc(state);
+    const urls = useMemo(() => {
+      const list: string[] = [shoeSrc(state), eyeSrc(state), hairSrc(state), browSrc(state)];
+      const o = outfitSrc(state);
+      if (o) list.push(o);
+      if (state.lipstick !== 'none' && lipUrl) list.push(lipUrl);
+      const mb = makeupSrc('blush', state);
+      const me = makeupSrc('eyeshadow', state);
+      const mh = makeupSrc('highlighter', state);
+      if (mb) list.push(mb);
+      if (me) list.push(me);
+      if (mh) list.push(mh);
+      const e = earringSrc(state);
+      if (e) list.push(e);
+      const j = jacketOverlaySrc(state);
+      if (j) list.push(j);
+      if (state.bag !== 'none') list.push(GENERATED.bag);
+      return list;
+    }, [state, lipUrl]);
 
-    const rasterHairUrl = hairRasterSrc(state);
-    const [hairImg, setHairImg] = useState<HTMLImageElement | null>(null);
-    useEffect(() => {
-      if (!rasterHairUrl) {
-        setHairImg(null);
-        return;
-      }
-      const img = new window.Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => setHairImg(img);
-      img.onerror = () => setHairImg(null);
-      img.src = rasterHairUrl;
-    }, [rasterHairUrl]);
+    const images = useLoadedImages(urls);
 
-    const rasterHairDims = useMemo(() => {
-      if (!hairImg?.width) return { w: RASTER_HAIR_W, h: 180 };
-      const w = RASTER_HAIR_W;
-      const h = (hairImg.height / hairImg.width) * w;
-      return { w, h };
-    }, [hairImg]);
-
-    const useRasterHair = Boolean(rasterHairUrl && hairImg);
+    const shoeU = shoeSrc(state);
+    const outfitU = outfitSrc(state);
+    const eyeU = eyeSrc(state);
+    const hairU = hairSrc(state);
+    const browU = browSrc(state);
+    const hasRasterEye = Boolean(imgGet(images, eyeU));
+    const hasRasterLip = state.lipstick !== 'none' && Boolean(lipUrl && imgGet(images, lipUrl));
+    const hasRasterHair = Boolean(imgGet(images, hairU));
 
     return (
       <Stage width={W} height={H} ref={ref}>
         <Layer listening={false}>
-          <Rect x={0} y={0} width={W} height={H} cornerRadius={24} fillLinearGradientStartPoint={{ x: 0, y: 0 }} fillLinearGradientEndPoint={{ x: W, y: H }} fillLinearGradientColorStops={[0, '#FDE8F2', 0.5, '#FFF5FA', 1, '#E8F5F0']} />
+          <Rect
+            x={0}
+            y={0}
+            width={W}
+            height={H}
+            cornerRadius={24}
+            fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+            fillLinearGradientEndPoint={{ x: W, y: H }}
+            fillLinearGradientColorStops={[0, '#FDE8F2', 0.5, '#FFF5FA', 1, '#E8F5F0']}
+          />
 
-          {/* Hair back (векторная заглушка, если нет PNG) */}
-          {!useRasterHair && (
-            <Ellipse x={cx} y={140} radiusX={hairBack.hw} radiusY={hairBack.hh} fill={hair} opacity={0.95} />
+          {imgGet(images, shoeU) ? (
+            <KonvaImage
+              image={imgGet(images, shoeU)!}
+              x={L.shoes.x}
+              y={L.shoes.y}
+              width={L.shoes.w}
+              height={L.shoes.h}
+              listening={false}
+            />
+          ) : (
+            <Group y={H - 36}>
+              <Ellipse
+                x={cx - 34}
+                y={14}
+                radiusX={24}
+                radiusY={10}
+                fill={state.shoes.startsWith('heels') ? '#2A2020' : state.shoes === 'boots' ? '#4A3A38' : '#FFFFFF'}
+                stroke="#DDD"
+                strokeWidth={1}
+              />
+              <Ellipse
+                x={cx + 34}
+                y={14}
+                radiusX={24}
+                radiusY={10}
+                fill={state.shoes.startsWith('heels') ? '#2A2020' : state.shoes === 'boots' ? '#4A3A38' : '#F8E8F2'}
+                stroke="#DDD"
+                strokeWidth={1}
+              />
+            </Group>
           )}
 
-          {/* Shoulders / top */}
-          <Group y={neckY}>
-            <Ellipse x={cx} y={40} radiusX={108} radiusY={52} fill={skin} />
-            {state.outfitMode === 'dress' && state.dress !== 'none' ? (
-              <Group>
+          {outfitU && imgGet(images, outfitU) && (
+            <KonvaImage
+              image={imgGet(images, outfitU)!}
+              x={L.outfit.x}
+              y={L.outfit.y}
+              width={L.outfit.w}
+              height={L.outfit.h}
+              listening={false}
+            />
+          )}
+
+          {!outfitU || !imgGet(images, outfitU!) ? (
+            <Group y={neckY}>
+              <Ellipse x={cx} y={40} radiusX={108} radiusY={52} fill={skin} />
+              {state.outfitMode === 'dress' && state.dress !== 'none' ? (
                 <Line
-                  points={[cx - 95, 55, cx + 95, 55, cx + 75, 200, cx - 75, 200]}
+                  points={[cx - 95, 55, cx + 95, 55, cx + 72, 152, cx - 72, 152]}
                   closed
                   fill={state.dress === 'cocktail' ? '#E91E8C' : state.dress === 'slip' ? '#F8B4D9' : '#C8E6D5'}
                 />
-              </Group>
-            ) : (
-              <Group>
+              ) : (
                 <Line
-                  points={[cx - 88, 48, cx + 88, 48, cx + 82, 165, cx - 82, 165]}
+                  points={[cx - 88, 48, cx + 88, 48, cx + 80, 122, cx - 80, 122]}
                   closed
-                  fill={
-                    state.top === 'tee_white'
-                      ? '#FFFFFF'
-                      : state.top === 'tee_blush'
-                        ? '#FDE8F2'
-                        : state.top === 'hoodie'
-                          ? '#E8E0F5'
-                          : state.top === 'crop_top'
-                            ? '#F8B4D9'
-                            : '#FFFFFF'
-                  }
+                  fill="#FFFFFF"
                   stroke="#E8C4D8"
                   strokeWidth={1}
                 />
-              </Group>
-            )}
-            {state.jacket !== 'none' && (
-              <Line
-                points={[cx - 92, 42, cx + 92, 42, cx + 90, 170, cx - 90, 170]}
-                closed
-                fill={state.jacket === 'denim' ? '#6B8CCE' : state.jacket === 'cardigan' ? '#F5D6E8' : '#D8C4E8'}
-                opacity={0.92}
-              />
-            )}
-          </Group>
+              )}
+            </Group>
+          ) : null}
 
-          {/* Neck */}
           <Rect x={cx - 28} y={neckY - 8} width={56} height={44} fill={skin} cornerRadius={8} />
 
-          {/* Face */}
+          {!hasRasterHair && (
+            <Ellipse x={cx} y={140} radiusX={115} radiusY={150} fill={hairCol} opacity={0.92} />
+          )}
+
           <Ellipse x={cx} y={165} radiusX={rx} radiusY={ry} fill={skin} stroke="#E8B8A8" strokeWidth={1} />
 
-          {/* Eyeshadow */}
-          {state.eyeshadow !== 'none' && (
+          {makeupSrc('blush', state) && imgGet(images, makeupSrc('blush', state)!) && (
+            <KonvaImage
+              image={imgGet(images, makeupSrc('blush', state)!)!}
+              x={L.makeupBlush.x}
+              y={L.makeupBlush.y}
+              width={L.makeupBlush.w}
+              height={L.makeupBlush.h}
+              opacity={0.45}
+              listening={false}
+            />
+          )}
+          {state.eyeshadow !== 'none' && !makeupSrc('eyeshadow', state) && (
             <>
               <Ellipse x={cx - 32} y={158} radiusX={26} radiusY={14} fill={SHADOW[state.eyeshadow]} />
               <Ellipse x={cx + 32} y={158} radiusX={26} radiusY={14} fill={SHADOW[state.eyeshadow]} />
             </>
           )}
+          {makeupSrc('eyeshadow', state) && imgGet(images, makeupSrc('eyeshadow', state)!) && (
+            <KonvaImage
+              image={imgGet(images, makeupSrc('eyeshadow', state)!)!}
+              x={L.makeupLiner.x}
+              y={L.makeupLiner.y}
+              width={L.makeupLiner.w}
+              height={L.makeupLiner.h}
+              opacity={0.55}
+              listening={false}
+            />
+          )}
+          {makeupSrc('highlighter', state) && imgGet(images, makeupSrc('highlighter', state)!) && (
+            <KonvaImage
+              image={imgGet(images, makeupSrc('highlighter', state)!)!}
+              x={L.makeupHi.x}
+              y={L.makeupHi.y}
+              width={L.makeupHi.w}
+              height={L.makeupHi.h}
+              opacity={0.4}
+              listening={false}
+            />
+          )}
 
-          {/* Eyes */}
-          <Ellipse x={cx - 32} y={162} radiusX={14} radiusY={10} fill="#FFFFFF" />
-          <Ellipse x={cx + 32} y={162} radiusX={14} radiusY={10} fill="#FFFFFF" />
-          <Ellipse x={cx - 32} y={162} radiusX={7} radiusY={7} fill={eye} />
-          <Ellipse x={cx + 32} y={162} radiusX={7} radiusY={7} fill={eye} />
-          <Ellipse x={cx - 30} y={160} radiusX={3} radiusY={2} fill="#FFFFFF" opacity={0.7} />
-          <Ellipse x={cx + 34} y={160} radiusX={3} radiusY={2} fill="#FFFFFF" opacity={0.7} />
+          {imgGet(images, browU) && (
+            <KonvaImage
+              image={imgGet(images, browU)!}
+              x={L.brows.x}
+              y={L.brows.y}
+              width={L.brows.w}
+              height={L.brows.h}
+              listening={false}
+            />
+          )}
 
-          {/* Lashes */}
-          {[-32, 32].map((ox) => (
-            <Group key={ox}>
-              {[-1, 0, 1].map((i) => (
-                <Line
-                  key={i}
-                  points={[cx + ox - 10 + i * 8, 152, cx + ox - 10 + i * 8 - 2, 152 - lashLen]}
-                  stroke="#2A2020"
-                  strokeWidth={state.lashes === 'volume' ? 2.2 : 1.6}
-                  lineCap="round"
-                />
-              ))}
-            </Group>
-          ))}
+          {hasRasterEye ? (
+            <KonvaImage
+              image={imgGet(images, eyeU)!}
+              x={L.eyes.x}
+              y={L.eyes.y}
+              width={L.eyes.w}
+              height={L.eyes.h}
+              listening={false}
+            />
+          ) : (
+            <>
+              <Ellipse x={cx - 32} y={162} radiusX={14} radiusY={10} fill="#FFFFFF" />
+              <Ellipse x={cx + 32} y={162} radiusX={14} radiusY={10} fill="#FFFFFF" />
+              <Ellipse x={cx - 32} y={162} radiusX={7} radiusY={7} fill={eyeFallback} />
+              <Ellipse x={cx + 32} y={162} radiusX={7} radiusY={7} fill={eyeFallback} />
+              <Ellipse x={cx - 30} y={160} radiusX={3} radiusY={2} fill="#FFFFFF" opacity={0.7} />
+              <Ellipse x={cx + 34} y={160} radiusX={3} radiusY={2} fill="#FFFFFF" opacity={0.7} />
+            </>
+          )}
 
-          {/* Blush */}
-          {state.blush !== 'none' && (
+          {!hasRasterEye &&
+            [-32, 32].map((ox) => (
+              <Group key={ox}>
+                {[-1, 0, 1].map((i) => (
+                  <Line
+                    key={i}
+                    points={[cx + ox - 10 + i * 8, 152, cx + ox - 10 + i * 8 - 2, 152 - lashLen]}
+                    stroke="#2A2020"
+                    strokeWidth={state.lashes === 'volume' ? 2.2 : 1.6}
+                    lineCap="round"
+                  />
+                ))}
+              </Group>
+            ))}
+
+          {state.blush !== 'none' && !makeupSrc('blush', state) && (
             <>
               <Ellipse x={cx - 52} y={178} radiusX={18} radiusY={12} fill={BLUSH_C[state.blush]} />
               <Ellipse x={cx + 52} y={178} radiusX={18} radiusY={12} fill={BLUSH_C[state.blush]} />
             </>
           )}
 
-          {/* Highlighter */}
-          {state.highlighter !== 'none' && (
+          {state.highlighter !== 'none' && !makeupSrc('highlighter', state) && (
             <>
               <Ellipse x={cx - 48} y={168} radiusX={12} radiusY={8} fill={HI_C[state.highlighter]} />
               <Ellipse x={cx + 48} y={168} radiusX={12} radiusY={8} fill={HI_C[state.highlighter]} />
             </>
           )}
 
-          {/* Lips */}
-          <Ellipse
-            x={cx}
-            y={192}
-            radiusX={22}
-            radiusY={9}
-            fill={LIP[state.lipstick] === 'transparent' ? '#D89090' : LIP[state.lipstick]}
-            opacity={state.lipstick === 'none' ? 0.55 : 0.95}
-          />
-
-          {/* Растровая причёска (прозрачное «окно» под лицо) */}
-          {useRasterHair && hairImg && (
+          {hasRasterLip && lipUrl ? (
             <KonvaImage
-              image={hairImg}
-              x={cx - rasterHairDims.w / 2}
-              y={RASTER_HAIR_Y}
-              width={rasterHairDims.w}
-              height={rasterHairDims.h}
+              image={imgGet(images, lipUrl)!}
+              x={L.lips.x}
+              y={L.lips.y}
+              width={L.lips.w}
+              height={L.lips.h}
               listening={false}
+            />
+          ) : (
+            <Ellipse
+              x={cx}
+              y={192}
+              radiusX={22}
+              radiusY={9}
+              fill={
+                LIP_FALLBACK[state.lipstick] === 'transparent' ? '#D89090' : LIP_FALLBACK[state.lipstick]
+              }
+              opacity={state.lipstick === 'none' ? 0.55 : 0.95}
             />
           )}
 
-          {/* Hair front — вектор, если PNG нет */}
-          {!useRasterHair && state.hairStyle !== 'pixie' && (
-            <Group>
-              <Ellipse x={cx - 55} y={125} radiusX={38} radiusY={48} fill={hair} />
-              <Ellipse x={cx + 55} y={125} radiusX={38} radiusY={48} fill={hair} />
-              {state.hairStyle === 'pony' && (
-                <Ellipse x={cx} y={85} radiusX={22} radiusY={28} fill={hair} />
-              )}
-              {state.hairStyle === 'bun' && (
-                <Ellipse x={cx} y={92} radiusX={34} radiusY={34} fill={hair} />
-              )}
-            </Group>
+          {hasRasterHair && hairU && (
+            <KonvaImage
+              image={imgGet(images, hairU)!}
+              x={L.hair.x}
+              y={L.hair.y}
+              width={L.hair.w}
+              height={L.hair.h}
+              listening={false}
+            />
           )}
-          {!useRasterHair && state.hairStyle === 'pixie' && (
-            <Ellipse x={cx} y={128} radiusX={78} radiusY={40} fill={hair} />
+          {!hasRasterHair && (
+            <>
+              <Ellipse x={cx - 55} y={125} radiusX={38} radiusY={48} fill={hairCol} />
+              <Ellipse x={cx + 55} y={125} radiusX={38} radiusY={48} fill={hairCol} />
+            </>
           )}
 
-          {/* Earrings */}
-          {state.earrings !== 'none' && (
+          {state.earrings !== 'none' && earringSrc(state) && imgGet(images, earringSrc(state)!) && (
+            <KonvaImage
+              image={imgGet(images, earringSrc(state)!)!}
+              x={L.earrings.x}
+              y={L.earrings.y}
+              width={L.earrings.w}
+              height={L.earrings.h}
+              listening={false}
+            />
+          )}
+          {state.earrings !== 'none' && !imgGet(images, earringSrc(state)!) && (
             <>
               <Ellipse x={cx - rx - 6} y={172} radiusX={5} radiusY={5} fill="#F0D060" />
               <Ellipse x={cx + rx + 6} y={172} radiusX={5} radiusY={5} fill="#F0D060" />
@@ -287,43 +393,34 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
                   />
                 </>
               )}
-              {state.earrings === 'drops' && (
-                <>
-                  <Ellipse x={cx - rx - 6} y={186} radiusX={4} radiusY={10} fill="#E91E8C" opacity={0.8} />
-                  <Ellipse x={cx + rx + 6} y={186} radiusX={4} radiusY={10} fill="#E91E8C" opacity={0.8} />
-                </>
-              )}
             </>
           )}
 
-          {/* Shoes */}
-          <Group y={H - 48}>
-            <Ellipse
-              x={cx - 38}
-              y={18}
-              radiusX={28}
-              radiusY={12}
-              fill={state.shoes.startsWith('heels') ? '#2A2020' : state.shoes === 'boots' ? '#4A3A38' : '#FFFFFF'}
-              stroke="#DDD"
-              strokeWidth={1}
+          {jacketOverlaySrc(state) && imgGet(images, jacketOverlaySrc(state)!) && (
+            <KonvaImage
+              image={imgGet(images, jacketOverlaySrc(state)!)!}
+              x={L.jacket.x}
+              y={L.jacket.y}
+              width={L.jacket.w}
+              height={L.jacket.h}
+              listening={false}
             />
-            <Ellipse
-              x={cx + 38}
-              y={18}
-              radiusX={28}
-              radiusY={12}
-              fill={state.shoes.startsWith('heels') ? '#2A2020' : state.shoes === 'boots' ? '#4A3A38' : '#F8E8F2'}
-              stroke="#DDD"
-              strokeWidth={1}
-            />
-          </Group>
+          )}
 
-          {/* Bag */}
-          {state.bag !== 'none' && (
+          {state.bag !== 'none' && imgGet(images, GENERATED.bag) && (
+            <KonvaImage
+              image={imgGet(images, GENERATED.bag)!}
+              x={L.bag.x}
+              y={L.bag.y}
+              width={L.bag.w}
+              height={L.bag.h}
+              listening={false}
+            />
+          )}
+          {state.bag !== 'none' && !imgGet(images, GENERATED.bag) && (
             <Group x={cx + 100} y={240}>
               <Rect width={36} height={44} cornerRadius={6} fill="#E91E8C" opacity={0.85} />
               <Line points={[0, 0, 18, -18, 36, 0]} stroke="#9B1B5A" strokeWidth={3} lineCap="round" />
-              {state.bag === 'clutch' && <Rect x={4} y={10} width={28} height={24} cornerRadius={4} fill="#F8B4D9" />}
             </Group>
           )}
         </Layer>
