@@ -1,13 +1,48 @@
 /**
- * Каждый id должен совпадать с именем файла в `avatar-assets/generated/` или `bases/`
- * (см. `generatedPack.ts`).
+ * Опции редактора: части лица — файлы в `avatar-assets/parts/`,
+ * одежда/волосы — в `avatar-assets/generated/` (если скопированы).
  */
 
-export const FACE_SHAPES = [
-  { id: 'oval', label: 'Овал' },
-  { id: 'round', label: 'Круг' },
-  { id: 'heart', label: 'Сердце' },
-];
+function nOpts(n: number, prefix: string): { id: string; label: string }[] {
+  return Array.from({ length: n }, (_, i) => ({
+    id: String(i + 1),
+    label: `${prefix} ${i + 1}`,
+  }));
+}
+
+const PUPIL_IDS = [
+  '1a',
+  '1b',
+  '1c',
+  '2a',
+  '2b',
+  '2c',
+  '3a',
+  '3b',
+  '3c',
+  '4a',
+  '4b',
+  '4c',
+  '5a',
+  '5b',
+  '5c',
+] as const;
+
+export const PART_EARS = [{ id: 'none', label: 'Нет' }, ...nOpts(8, 'Уши')];
+
+export const PART_DECOR_FACE = [{ id: 'none', label: 'Нет' }, ...nOpts(21, 'Декор')];
+
+export const PART_EYEBROWS = nOpts(10, 'Брови');
+
+export const PART_EYELASHES = nOpts(7, 'Ресницы');
+
+export const PART_EYE_WHITE = nOpts(4, 'Форма глаза');
+
+export const PART_PUPILS = PUPIL_IDS.map((id) => ({ id, label: `Зрачок ${id}` }));
+
+export const PART_NOSE = nOpts(6, 'Нос');
+
+export const PART_MOUTH = nOpts(14, 'Губы');
 
 export const SKIN_TONES = [
   { id: 'porcelain', label: 'Светлый' },
@@ -33,61 +68,6 @@ export const HAIR_COLORS = [
   { id: 'lilac', label: 'Лиловый' },
 ];
 
-/** Форма глаз: `eyes_{id}_{цвет}.png` */
-export const EYE_SHAPES = [
-  { id: 'almond', label: 'Миндаль' },
-  { id: 'round', label: 'Круглые' },
-  { id: 'wide', label: 'Широкие' },
-];
-
-export const EYE_COLORS = [
-  { id: 'brown', label: 'Карий' },
-  { id: 'green', label: 'Зелёный' },
-  { id: 'blue', label: 'Голубой' },
-];
-
-export const LASHES = [
-  { id: 'natural', label: 'Естественные' },
-  { id: 'long', label: 'Длинные' },
-  { id: 'volume', label: 'Объём' },
-];
-
-/** `lips_{id}.png` кроме none */
-export const LIPSTICKS = [
-  { id: 'none', label: 'Нет' },
-  { id: 'nude', label: 'Нюд' },
-  { id: 'rose', label: 'Роза' },
-  { id: 'berry', label: 'Ягода' },
-  { id: 'red', label: 'Красный' },
-  { id: 'coral', label: 'Коралл' },
-];
-
-/** `eyeshadow_{id}.png` */
-export const EYESHADOWS = [
-  { id: 'none', label: 'Нет' },
-  { id: 'nude_smoke', label: 'Нюд' },
-  { id: 'rose_gold', label: 'Розовое золото' },
-  { id: 'mauve', label: 'Лиловый' },
-  { id: 'smoky', label: 'Смоки' },
-];
-
-/** `blush_{id}.png` */
-export const BLUSH = [
-  { id: 'none', label: 'Нет' },
-  { id: 'peach', label: 'Персик' },
-  { id: 'rose', label: 'Роза' },
-  { id: 'berry', label: 'Ягода' },
-];
-
-/** `highlighter_{id}.png` */
-export const HIGHLIGHTER = [
-  { id: 'none', label: 'Нет' },
-  { id: 'pearl', label: 'Жемчуг' },
-  { id: 'gold', label: 'Золото' },
-  { id: 'pink_glow', label: 'Розовое сияние' },
-];
-
-/** `top_{id}.png` */
 export const TOPS = [
   { id: 'tee_white', label: 'Футболка белая' },
   { id: 'tee_blush', label: 'Футболка пудра' },
@@ -96,7 +76,6 @@ export const TOPS = [
   { id: 'crop_top', label: 'Кроп-топ' },
 ];
 
-/** `dress_{id}.png` */
 export const DRESSES = [
   { id: 'none', label: 'Нет' },
   { id: 'midi_floral', label: 'Миди цветы' },
@@ -109,7 +88,6 @@ export const JACKETS = [
   { id: 'denim', label: 'Джинсовка' },
 ];
 
-/** `shoes_{id}.png` */
 export const SHOES = [
   { id: 'sneakers_white', label: 'Кроссовки' },
   { id: 'sneakers_pastel', label: 'Кроссовки пастель' },
@@ -118,7 +96,6 @@ export const SHOES = [
   { id: 'boots', label: 'Ботинки' },
 ];
 
-/** `earrings_{id}.png` */
 export const EARRINGS = [
   { id: 'none', label: 'Нет' },
   { id: 'studs', label: 'Пусеты' },
@@ -126,7 +103,6 @@ export const EARRINGS = [
   { id: 'drops', label: 'Подвески' },
 ];
 
-/** `bag_crossbody.png` */
 export const BAGS = [
   { id: 'none', label: 'Нет' },
   { id: 'crossbody', label: 'Сумка' },

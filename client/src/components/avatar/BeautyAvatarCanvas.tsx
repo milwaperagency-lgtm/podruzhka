@@ -4,21 +4,26 @@ import { Stage, Layer, Rect, Image as KonvaImage } from 'react-konva';
 import type { AvatarState } from '@/types';
 import {
   bagSrc,
-  blushSrc,
-  browSrc,
   earringSrc,
-  eyeshadowSrc,
-  eyeSrc,
   hairSrc,
-  highlighterSrc,
   jacketOverlaySrc,
-  lashSrc,
-  lipSrc,
   L,
   outfitSrc,
   shoeSrc,
-  skinBaseSrc,
 } from '@/components/avatar/generatedPack';
+import {
+  baseWhiteEyesSrc,
+  collectFacePartUrls,
+  L_FACE,
+  partDecorFaceSrc,
+  partEarsSrc,
+  partEyebrowsSrc,
+  partEyelashesSrc,
+  partEyeWhiteSrc,
+  partMouthSrc,
+  partNoseSrc,
+  partPupilSrc,
+} from '@/components/avatar/partsPack';
 import { useLoadedImages } from '@/components/avatar/useGeneratedImages';
 
 const W = 320;
@@ -33,59 +38,44 @@ export interface BeautyAvatarCanvasProps {
   state: AvatarState;
 }
 
-/** Только растровые слои из `public/avatar-assets/…` — без векторных «кукол». */
+/**
+ * Слои: обувь → одежда → жакет → лицо (база белых глаз → склера → зрачки → нос → рот → брови → ресницы → декор → уши) → волосы → серьги → сумка.
+ * Только PNG из `parts/` и `generated/`.
+ */
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {
-    const lipUrl: string | null = lipSrc(state);
-    const skinU = skinBaseSrc(state);
-    const lashU = lashSrc(state);
-    const urls = useMemo((): (string | null)[] => {
-      const list: (string | null)[] = [
-        skinU,
-        shoeSrc(state),
-        eyeSrc(state),
-        lashU,
-        hairSrc(state),
-        browSrc(state),
-      ];
-      const o = outfitSrc(state);
-      if (o) list.push(o);
-      if (state.lipstick !== 'none' && lipUrl !== null) list.push(lipUrl);
-      const mb = blushSrc(state);
-      const me = eyeshadowSrc(state);
-      const mh = highlighterSrc(state);
-      if (mb) list.push(mb);
-      if (me) list.push(me);
-      if (mh) list.push(mh);
-      const e = earringSrc(state);
-      if (e) list.push(e);
-      const j = jacketOverlaySrc(state);
-      if (j) list.push(j);
-      if (state.bag !== 'none') list.push(bagSrc());
-      return list;
-    }, [state, lipUrl, skinU, lashU]);
-
-    const images = useLoadedImages(urls);
-
     const shoeU = shoeSrc(state);
     const outfitU = outfitSrc(state);
-    const eyeU = eyeSrc(state);
+    const jackU = jacketOverlaySrc(state);
     const hairU = hairSrc(state);
-    const browU = browSrc(state);
+    const earU = earringSrc(state);
     const bagU = bagSrc();
 
-    const hasSkinBase = Boolean(imgGet(images, skinU));
-    const hasRasterEye = Boolean(imgGet(images, eyeU));
-    const hasRasterLash = Boolean(imgGet(images, lashU));
-    const hasRasterLip = state.lipstick !== 'none' && Boolean(lipUrl && imgGet(images, lipUrl));
-    const hasRasterHair = Boolean(imgGet(images, hairU));
-    const hasBrows = Boolean(imgGet(images, browU));
+    const faceUrls = useMemo(() => collectFacePartUrls(state), [state]);
+    const bodyUrls = useMemo(
+      (): (string | null)[] => [
+        shoeU,
+        outfitU,
+        jackU,
+        hairU,
+        earU,
+        state.bag !== 'none' ? bagU : null,
+      ],
+      [state, shoeU, outfitU, jackU, hairU, earU, bagU]
+    );
 
-    const blushU = blushSrc(state);
-    const esU = eyeshadowSrc(state);
-    const hiU = highlighterSrc(state);
-    const earU = earringSrc(state);
-    const jackU = jacketOverlaySrc(state);
+    const urls = useMemo(() => [...faceUrls, ...bodyUrls.filter(Boolean)], [faceUrls, bodyUrls]);
+    const images = useLoadedImages(urls);
+
+    const whiteU = baseWhiteEyesSrc();
+    const eyeWU = partEyeWhiteSrc(state.partEyeWhite);
+    const pupilU = partPupilSrc(state.partPupil);
+    const noseU = partNoseSrc(state.partNose);
+    const mouthU = partMouthSrc(state.partMouth);
+    const browU = partEyebrowsSrc(state.partEyebrows);
+    const lashU = partEyelashesSrc(state.partEyelashes);
+    const decorU = partDecorFaceSrc(state.partDecorFace);
+    const earsU = partEarsSrc(state.partEars);
 
     return (
       <Stage width={W} height={H} ref={ref}>
@@ -112,17 +102,6 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             />
           )}
 
-          {hasSkinBase && (
-            <KonvaImage
-              image={imgGet(images, skinU)!}
-              x={L.skinBase.x}
-              y={L.skinBase.y}
-              width={L.skinBase.w}
-              height={L.skinBase.h}
-              listening={false}
-            />
-          )}
-
           {outfitU && imgGet(images, outfitU) && (
             <KonvaImage
               image={imgGet(images, outfitU)!}
@@ -134,85 +113,109 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             />
           )}
 
-          {blushU && imgGet(images, blushU) && (
+          {jackU && imgGet(images, jackU) && (
             <KonvaImage
-              image={imgGet(images, blushU)!}
-              x={L.makeupBlush.x}
-              y={L.makeupBlush.y}
-              width={L.makeupBlush.w}
-              height={L.makeupBlush.h}
-              opacity={0.45}
-              listening={false}
-            />
-          )}
-          {esU && imgGet(images, esU) && (
-            <KonvaImage
-              image={imgGet(images, esU)!}
-              x={L.makeupLiner.x}
-              y={L.makeupLiner.y}
-              width={L.makeupLiner.w}
-              height={L.makeupLiner.h}
-              opacity={0.55}
-              listening={false}
-            />
-          )}
-          {hiU && imgGet(images, hiU) && (
-            <KonvaImage
-              image={imgGet(images, hiU)!}
-              x={L.makeupHi.x}
-              y={L.makeupHi.y}
-              width={L.makeupHi.w}
-              height={L.makeupHi.h}
-              opacity={0.4}
+              image={imgGet(images, jackU)!}
+              x={L.jacket.x}
+              y={L.jacket.y}
+              width={L.jacket.w}
+              height={L.jacket.h}
               listening={false}
             />
           )}
 
-          {hasSkinBase && hasBrows && (
+          {imgGet(images, whiteU) && (
+            <KonvaImage
+              image={imgGet(images, whiteU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+          {imgGet(images, eyeWU) && (
+            <KonvaImage
+              image={imgGet(images, eyeWU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+          {imgGet(images, pupilU) && (
+            <KonvaImage
+              image={imgGet(images, pupilU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+          {imgGet(images, noseU) && (
+            <KonvaImage
+              image={imgGet(images, noseU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+          {imgGet(images, mouthU) && (
+            <KonvaImage
+              image={imgGet(images, mouthU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+          {imgGet(images, browU) && (
             <KonvaImage
               image={imgGet(images, browU)!}
-              x={L.brows.x}
-              y={L.brows.y}
-              width={L.brows.w}
-              height={L.brows.h}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
               listening={false}
             />
           )}
-
-          {hasRasterEye && (
-            <KonvaImage
-              image={imgGet(images, eyeU)!}
-              x={L.eyes.x}
-              y={L.eyes.y}
-              width={L.eyes.w}
-              height={L.eyes.h}
-              listening={false}
-            />
-          )}
-
-          {hasRasterLash && (
+          {imgGet(images, lashU) && (
             <KonvaImage
               image={imgGet(images, lashU)!}
-              x={L.lashes.x}
-              y={L.lashes.y}
-              width={L.lashes.w}
-              height={L.lashes.h}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
               listening={false}
             />
           )}
-
-          {hasRasterLip && lipUrl && (
+          {decorU && imgGet(images, decorU) && (
             <KonvaImage
-              image={imgGet(images, lipUrl)!}
-              x={L.lips.x}
-              y={L.lips.y}
-              width={L.lips.w}
-              height={L.lips.h}
+              image={imgGet(images, decorU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+          {earsU && imgGet(images, earsU) && (
+            <KonvaImage
+              image={imgGet(images, earsU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
               listening={false}
             />
           )}
 
-          {hasRasterHair && (
+          {imgGet(images, hairU) && (
             <KonvaImage
               image={imgGet(images, hairU)!}
               x={L.hair.x}
@@ -230,17 +233,6 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
               y={L.earrings.y}
               width={L.earrings.w}
               height={L.earrings.h}
-              listening={false}
-            />
-          )}
-
-          {jackU && imgGet(images, jackU) && (
-            <KonvaImage
-              image={imgGet(images, jackU)!}
-              x={L.jacket.x}
-              y={L.jacket.y}
-              width={L.jacket.w}
-              height={L.jacket.h}
               listening={false}
             />
           )}

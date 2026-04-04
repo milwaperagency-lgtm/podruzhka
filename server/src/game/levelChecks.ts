@@ -1,14 +1,10 @@
 import type { AvatarState } from '../constants/avatar.js';
-import { DEFAULT_AVATAR, diffCount, hasAnyMakeup } from '../constants/avatar.js';
+import { DEFAULT_AVATAR, diffCount, hasAnyMakeup, makeupLayerCount } from '../constants/avatar.js';
 
-function makeupCount(s: AvatarState): number {
-  let n = 0;
-  if (s.lipstick !== 'none') n++;
-  if (s.eyeshadow !== 'none') n++;
-  if (s.blush !== 'none') n++;
-  if (s.highlighter !== 'none') n++;
-  return n;
-}
+/** Яркие варианты рта (условно «помада»). */
+const BOLD_MOUTH = ['11', '12', '13', '14'];
+const RED_MOUTH = ['12', '13', '14'];
+const NUDE_MOUTH = ['1', '2', '3'];
 
 export function validateLevelTask(levelId: number, s: AvatarState): { ok: true } | { ok: false; reason: string } {
   switch (levelId) {
@@ -19,11 +15,11 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
     case 2:
       return hasAnyMakeup(s)
         ? { ok: true }
-        : { ok: false, reason: 'Добавьте макияж (помада, тени, румяна или хайлайтер).' };
+        : { ok: false, reason: 'Добавьте макияж (декор лица, ресницы, брови или другой рот).' };
     case 3:
       if (s.dress === 'none') return { ok: false, reason: 'Выберите платье.' };
       if (s.shoes !== 'heels_black' && s.shoes !== 'heels_nude') return { ok: false, reason: 'Нужны каблуки.' };
-      if (s.lipstick === 'none' || s.lipstick === 'nude') return { ok: false, reason: 'Добавьте яркую помаду.' };
+      if (!BOLD_MOUTH.includes(s.partMouth)) return { ok: false, reason: 'Выберите более выразительные губы.' };
       return { ok: true };
     case 4:
       if (s.outfitMode !== 'top') return { ok: false, reason: 'Выберите режим «Топ» (без платья).' };
@@ -43,19 +39,19 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
     }
     case 6: {
       const pastel =
-        ['rose', 'coral'].includes(s.lipstick) ||
-        s.eyeshadow === 'rose_gold' ||
-        ['rose', 'peach'].includes(s.blush);
-      return pastel ? { ok: true } : { ok: false, reason: 'Используйте розовые/пастельные акценты.' };
+        s.partPupil.includes('b') ||
+        s.partDecorFace !== 'none' ||
+        ['4', '5', '6'].includes(s.partMouth);
+      return pastel ? { ok: true } : { ok: false, reason: 'Используйте розовые/пастельные акценты (зрачок b/c, декор).' };
     }
     case 7:
       return s.hairStyle !== DEFAULT_AVATAR.hairStyle || s.hairColor !== DEFAULT_AVATAR.hairColor
         ? { ok: true }
         : { ok: false, reason: 'Смените причёску и/или цвет волос.' };
     case 8:
-      return s.eyeColor !== 'brown' || s.lashes !== 'natural' || s.eyeShape !== 'almond'
+      return s.partPupil !== '1a' || s.partEyelashes !== '1' || s.partEyeWhite !== '1'
         ? { ok: true }
-        : { ok: false, reason: 'Измените форму глаз, цвет или ресницы.' };
+        : { ok: false, reason: 'Измените форму глаз, зрачок или ресницы.' };
     case 9:
       return s.jacket !== 'none' ? { ok: true } : { ok: false, reason: 'Наденьте жакет/накидку.' };
     case 10:
@@ -63,27 +59,25 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
         ? { ok: true }
         : { ok: false, reason: 'Нужны и серьги, и сумка.' };
     case 11:
-      return s.top === 'tee_white' && s.shoes === 'sneakers_white' && s.lipstick === 'nude'
+      return s.top === 'tee_white' && s.shoes === 'sneakers_white' && NUDE_MOUTH.includes(s.partMouth)
         ? { ok: true }
-        : { ok: false, reason: 'Нейтральный look: белый топ, белые кроссовки, нюд-помада.' };
+        : { ok: false, reason: 'Нейтральный look: белый топ, белые кроссовки, спокойные губы (1–3).' };
     case 12:
-      return s.highlighter !== 'none' && s.blush !== 'none'
+      return s.partDecorFace !== 'none' && s.partEyelashes !== '1'
         ? { ok: true }
-        : { ok: false, reason: 'Добавьте хайлайтер и румяна.' };
+        : { ok: false, reason: 'Добавьте декор лица и не базовые ресницы.' };
     case 13:
-      return s.dress !== 'none' && s.shoes.startsWith('heels') && s.eyeshadow !== 'none'
+      return s.dress !== 'none' && s.shoes.startsWith('heels') && s.partDecorFace !== 'none'
         ? { ok: true }
-        : { ok: false, reason: 'Платье + каблуки + тени.' };
+        : { ok: false, reason: 'Платье + каблуки + декор лица.' };
     case 14:
-      return ['red', 'berry', 'rose'].includes(s.lipstick) &&
-        (s.eyeshadow === 'none' || s.eyeshadow === 'nude_smoke')
+      return RED_MOUTH.includes(s.partMouth) && (s.partDecorFace === 'none' || s.partDecorFace === '1')
         ? { ok: true }
-        : { ok: false, reason: 'Яркие губы и нейтральные тени/без теней.' };
+        : { ok: false, reason: 'Яркие губы и без тяжёлого декора (или минимальный).' };
     case 15:
-      return ['mauve', 'smoky', 'rose_gold'].includes(s.eyeshadow) &&
-        (s.lipstick === 'none' || s.lipstick === 'nude')
+      return ['3a', '3b', '3c', '4a', '4b', '4c'].includes(s.partPupil) && NUDE_MOUTH.includes(s.partMouth)
         ? { ok: true }
-        : { ok: false, reason: 'Акцент на глаза: выразительные тени + нейтральные губы.' };
+        : { ok: false, reason: 'Акцент на глаза: выразительный зрачок + нейтральные губы.' };
     case 16:
       return (s.shoes === 'sneakers_white' || s.shoes === 'sneakers_pastel') &&
         s.outfitMode === 'top' &&
@@ -94,9 +88,9 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
       const glam =
         s.dress !== 'none' &&
         s.shoes.startsWith('heels') &&
-        makeupCount(s) >= 3 &&
+        makeupLayerCount(s) >= 3 &&
         hasAnyMakeup(s);
-      return glam ? { ok: true } : { ok: false, reason: 'Платье, каблуки и насыщенный макияж (3+ слоя).' };
+      return glam ? { ok: true } : { ok: false, reason: 'Платье, каблуки и насыщенный макияж (3+ отличия).' };
     }
     case 18:
       return s.earrings === 'none' && s.bag === 'none' && hasAnyMakeup(s) && (s.dress !== 'none' || s.jacket !== 'none')
@@ -113,7 +107,7 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
         s.shoes.startsWith('heels') &&
         s.earrings !== 'none' &&
         s.bag !== 'none' &&
-        makeupCount(s) >= 3;
+        makeupLayerCount(s) >= 3;
       return full ? { ok: true } : { ok: false, reason: 'Финальный look: платье, каблуки, макияж, серьги и сумка.' };
     }
     default:

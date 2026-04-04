@@ -1,15 +1,15 @@
 export interface AvatarState {
-  faceShape: string;
+  partEars: string;
+  partDecorFace: string;
+  partEyebrows: string;
+  partEyelashes: string;
+  partEyeWhite: string;
+  partPupil: string;
+  partNose: string;
+  partMouth: string;
   skinTone: string;
   hairStyle: string;
   hairColor: string;
-  eyeShape: string;
-  eyeColor: string;
-  lashes: string;
-  lipstick: string;
-  eyeshadow: string;
-  blush: string;
-  highlighter: string;
   outfitMode: 'top' | 'dress';
   top: string;
   dress: string;
@@ -20,17 +20,17 @@ export interface AvatarState {
 }
 
 export const DEFAULT_AVATAR: AvatarState = {
-  faceShape: 'oval',
+  partEars: 'none',
+  partDecorFace: 'none',
+  partEyebrows: '1',
+  partEyelashes: '1',
+  partEyeWhite: '1',
+  partPupil: '1a',
+  partNose: '1',
+  partMouth: '1',
   skinTone: 'medium',
   hairStyle: 'long_wavy',
   hairColor: 'chestnut',
-  eyeShape: 'almond',
-  eyeColor: 'brown',
-  lashes: 'natural',
-  lipstick: 'none',
-  eyeshadow: 'none',
-  blush: 'none',
-  highlighter: 'none',
   outfitMode: 'top',
   top: 'tee_white',
   dress: 'none',
@@ -51,9 +51,20 @@ export function diffCount(a: AvatarState, b: AvatarState): number {
 
 export function hasAnyMakeup(s: AvatarState): boolean {
   return (
-    s.lipstick !== 'none' ||
-    s.eyeshadow !== 'none' ||
-    s.blush !== 'none' ||
-    s.highlighter !== 'none'
+    s.partDecorFace !== 'none' ||
+    s.partEyelashes !== '1' ||
+    s.partMouth !== '1' ||
+    s.partEyebrows !== '1'
   );
+}
+
+export function makeupLayerCount(s: AvatarState): number {
+  let n = 0;
+  if (s.partDecorFace !== 'none') n++;
+  if (s.partEyelashes !== '1') n++;
+  if (s.partEyebrows !== '1') n++;
+  if (s.partMouth !== '1') n++;
+  if (s.partPupil !== DEFAULT_AVATAR.partPupil) n++;
+  if (s.partEyeWhite !== DEFAULT_AVATAR.partEyeWhite) n++;
+  return n;
 }

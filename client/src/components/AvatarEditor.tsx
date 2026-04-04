@@ -2,52 +2,39 @@ import { useCallback, useMemo, useState } from 'react';
 import type Konva from 'konva';
 import type { AvatarState } from '@/types';
 import {
-  BLUSH,
+  BAGS,
   DRESSES,
   EARRINGS,
-  EYESHADOWS,
-  EYE_COLORS,
-  EYE_SHAPES,
-  FACE_SHAPES,
   HAIR_COLORS,
   HAIR_STYLES,
-  HIGHLIGHTER,
   JACKETS,
-  LASHES,
-  LIPSTICKS,
-  BAGS,
+  PART_DECOR_FACE,
+  PART_EARS,
+  PART_EYEBROWS,
+  PART_EYELASHES,
+  PART_EYE_WHITE,
+  PART_MOUTH,
+  PART_NOSE,
+  PART_PUPILS,
   SHOES,
   SKIN_TONES,
   TOPS,
 } from '@/data/avatarOptions';
 import BeautyAvatarCanvas from '@/components/avatar/BeautyAvatarCanvas';
 
-type Tab =
-  | 'face'
-  | 'hair'
-  | 'eyes'
-  | 'makeup'
-  | 'outfit'
-  | 'shoes'
-  | 'accessories';
+type Tab = 'face' | 'eyes' | 'mouth' | 'hair' | 'outfit' | 'shoes' | 'accessories';
 
 const tabs: { id: Tab; label: string }[] = [
   { id: 'face', label: 'Лицо' },
-  { id: 'hair', label: 'Волосы' },
   { id: 'eyes', label: 'Глаза' },
-  { id: 'makeup', label: 'Макияж' },
+  { id: 'mouth', label: 'Губы' },
+  { id: 'hair', label: 'Волосы' },
   { id: 'outfit', label: 'Наряд' },
   { id: 'shoes', label: 'Обувь' },
   { id: 'accessories', label: 'Аксессуары' },
 ];
 
-function OptionRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function OptionRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
       <p className="text-xs font-semibold uppercase tracking-wide text-podrygka-deep/60">{label}</p>
@@ -106,13 +93,58 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
       case 'face':
         return (
           <div className="space-y-4">
-            <OptionRow label="Форма лица">
-              <ChipSelect value={value.faceShape} onChange={(v) => patch({ faceShape: v })} options={FACE_SHAPES} />
+            <OptionRow label="Уши">
+              <ChipSelect value={value.partEars} onChange={(v) => patch({ partEars: v })} options={PART_EARS} />
+            </OptionRow>
+            <OptionRow label="Декор / макияж кожи">
+              <ChipSelect
+                value={value.partDecorFace}
+                onChange={(v) => patch({ partDecorFace: v })}
+                options={PART_DECOR_FACE}
+              />
+            </OptionRow>
+            <OptionRow label="Нос">
+              <ChipSelect value={value.partNose} onChange={(v) => patch({ partNose: v })} options={PART_NOSE} />
             </OptionRow>
             <OptionRow label="Тон кожи">
               <ChipSelect value={value.skinTone} onChange={(v) => patch({ skinTone: v })} options={SKIN_TONES} />
             </OptionRow>
           </div>
+        );
+      case 'eyes':
+        return (
+          <div className="space-y-4">
+            <OptionRow label="Белок глаза">
+              <ChipSelect
+                value={value.partEyeWhite}
+                onChange={(v) => patch({ partEyeWhite: v })}
+                options={PART_EYE_WHITE}
+              />
+            </OptionRow>
+            <OptionRow label="Зрачок">
+              <ChipSelect value={value.partPupil} onChange={(v) => patch({ partPupil: v })} options={PART_PUPILS} />
+            </OptionRow>
+            <OptionRow label="Брови">
+              <ChipSelect
+                value={value.partEyebrows}
+                onChange={(v) => patch({ partEyebrows: v })}
+                options={PART_EYEBROWS}
+              />
+            </OptionRow>
+            <OptionRow label="Ресницы">
+              <ChipSelect
+                value={value.partEyelashes}
+                onChange={(v) => patch({ partEyelashes: v })}
+                options={PART_EYELASHES}
+              />
+            </OptionRow>
+          </div>
+        );
+      case 'mouth':
+        return (
+          <OptionRow label="Форма губ">
+            <ChipSelect value={value.partMouth} onChange={(v) => patch({ partMouth: v })} options={PART_MOUTH} />
+          </OptionRow>
         );
       case 'hair':
         return (
@@ -122,37 +154,6 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
             </OptionRow>
             <OptionRow label="Цвет волос">
               <ChipSelect value={value.hairColor} onChange={(v) => patch({ hairColor: v })} options={HAIR_COLORS} />
-            </OptionRow>
-          </div>
-        );
-      case 'eyes':
-        return (
-          <div className="space-y-4">
-            <OptionRow label="Форма глаз">
-              <ChipSelect value={value.eyeShape} onChange={(v) => patch({ eyeShape: v })} options={EYE_SHAPES} />
-            </OptionRow>
-            <OptionRow label="Цвет глаз">
-              <ChipSelect value={value.eyeColor} onChange={(v) => patch({ eyeColor: v })} options={EYE_COLORS} />
-            </OptionRow>
-            <OptionRow label="Ресницы">
-              <ChipSelect value={value.lashes} onChange={(v) => patch({ lashes: v })} options={LASHES} />
-            </OptionRow>
-          </div>
-        );
-      case 'makeup':
-        return (
-          <div className="space-y-4">
-            <OptionRow label="Помада">
-              <ChipSelect value={value.lipstick} onChange={(v) => patch({ lipstick: v })} options={LIPSTICKS} />
-            </OptionRow>
-            <OptionRow label="Тени">
-              <ChipSelect value={value.eyeshadow} onChange={(v) => patch({ eyeshadow: v })} options={EYESHADOWS} />
-            </OptionRow>
-            <OptionRow label="Румяна">
-              <ChipSelect value={value.blush} onChange={(v) => patch({ blush: v })} options={BLUSH} />
-            </OptionRow>
-            <OptionRow label="Хайлайтер">
-              <ChipSelect value={value.highlighter} onChange={(v) => patch({ highlighter: v })} options={HIGHLIGHTER} />
             </OptionRow>
           </div>
         );
