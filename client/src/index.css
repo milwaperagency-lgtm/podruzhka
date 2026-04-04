@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  @apply bg-gradient-to-b from-podrygka-blush via-podrygka-cream to-white font-body text-podrygka-deep;
+  /* Safe areas for Telegram */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.glass-panel {
+  @apply rounded-3xl border border-white/60 bg-white/80 shadow-soft backdrop-blur-md;
+}
+
+.btn-primary {
+  @apply rounded-2xl bg-gradient-to-r from-podrygka-pink to-podrygka-deep px-6 py-3 font-semibold text-white shadow-card transition active:scale-[0.98];
+}
+
+.btn-secondary {
+  @apply rounded-2xl border-2 border-podrygka-rose bg-white/90 px-6 py-3 font-semibold text-podrygka-deep shadow-sm transition active:scale-[0.98];
+}
+
+.chip {
+  @apply inline-flex items-center rounded-full border border-podrygka-rose/40 bg-white/90 px-3 py-1 text-sm font-medium text-podrygka-deep;
+}
