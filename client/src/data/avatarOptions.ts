@@ -1,3 +1,8 @@
+/**
+ * Каждый id должен совпадать с именем файла в `avatar-assets/generated/` или `bases/`
+ * (см. `generatedPack.ts`).
+ */
+
 export const FACE_SHAPES = [
   { id: 'oval', label: 'Овал' },
   { id: 'round', label: 'Круг' },
@@ -13,12 +18,10 @@ export const SKIN_TONES = [
 ];
 
 export const HAIR_STYLES = [
-  { id: 'pixie', label: 'Пикси' },
   { id: 'bob', label: 'Каре' },
   { id: 'long_wavy', label: 'Длинные волны' },
   { id: 'long_straight', label: 'Длинные прямые' },
   { id: 'pony', label: 'Хвост' },
-  { id: 'bun', label: 'Пучок' },
 ];
 
 export const HAIR_COLORS = [
@@ -30,12 +33,17 @@ export const HAIR_COLORS = [
   { id: 'lilac', label: 'Лиловый' },
 ];
 
+/** Форма глаз: `eyes_{id}_{цвет}.png` */
+export const EYE_SHAPES = [
+  { id: 'almond', label: 'Миндаль' },
+  { id: 'round', label: 'Круглые' },
+  { id: 'wide', label: 'Широкие' },
+];
+
 export const EYE_COLORS = [
   { id: 'brown', label: 'Карий' },
   { id: 'green', label: 'Зелёный' },
   { id: 'blue', label: 'Голубой' },
-  { id: 'hazel', label: 'Орех' },
-  { id: 'grey', label: 'Серый' },
 ];
 
 export const LASHES = [
@@ -44,6 +52,7 @@ export const LASHES = [
   { id: 'volume', label: 'Объём' },
 ];
 
+/** `lips_{id}.png` кроме none */
 export const LIPSTICKS = [
   { id: 'none', label: 'Нет' },
   { id: 'nude', label: 'Нюд' },
@@ -53,6 +62,7 @@ export const LIPSTICKS = [
   { id: 'coral', label: 'Коралл' },
 ];
 
+/** `eyeshadow_{id}.png` */
 export const EYESHADOWS = [
   { id: 'none', label: 'Нет' },
   { id: 'nude_smoke', label: 'Нюд' },
@@ -61,6 +71,7 @@ export const EYESHADOWS = [
   { id: 'smoky', label: 'Смоки' },
 ];
 
+/** `blush_{id}.png` */
 export const BLUSH = [
   { id: 'none', label: 'Нет' },
   { id: 'peach', label: 'Персик' },
@@ -68,6 +79,7 @@ export const BLUSH = [
   { id: 'berry', label: 'Ягода' },
 ];
 
+/** `highlighter_{id}.png` */
 export const HIGHLIGHTER = [
   { id: 'none', label: 'Нет' },
   { id: 'pearl', label: 'Жемчуг' },
@@ -75,6 +87,7 @@ export const HIGHLIGHTER = [
   { id: 'pink_glow', label: 'Розовое сияние' },
 ];
 
+/** `top_{id}.png` */
 export const TOPS = [
   { id: 'tee_white', label: 'Футболка белая' },
   { id: 'tee_blush', label: 'Футболка пудра' },
@@ -83,6 +96,7 @@ export const TOPS = [
   { id: 'crop_top', label: 'Кроп-топ' },
 ];
 
+/** `dress_{id}.png` */
 export const DRESSES = [
   { id: 'none', label: 'Нет' },
   { id: 'midi_floral', label: 'Миди цветы' },
@@ -92,11 +106,10 @@ export const DRESSES = [
 
 export const JACKETS = [
   { id: 'none', label: 'Нет' },
-  { id: 'blazer', label: 'Пиджак' },
   { id: 'denim', label: 'Джинсовка' },
-  { id: 'cardigan', label: 'Кардиган' },
 ];
 
+/** `shoes_{id}.png` */
 export const SHOES = [
   { id: 'sneakers_white', label: 'Кроссовки' },
   { id: 'sneakers_pastel', label: 'Кроссовки пастель' },
@@ -105,6 +118,7 @@ export const SHOES = [
   { id: 'boots', label: 'Ботинки' },
 ];
 
+/** `earrings_{id}.png` */
 export const EARRINGS = [
   { id: 'none', label: 'Нет' },
   { id: 'studs', label: 'Пусеты' },
@@ -112,14 +126,12 @@ export const EARRINGS = [
   { id: 'drops', label: 'Подвески' },
 ];
 
+/** `bag_crossbody.png` */
 export const BAGS = [
   { id: 'none', label: 'Нет' },
-  { id: 'tote', label: 'Тоут' },
-  { id: 'clutch', label: 'Клатч' },
-  { id: 'crossbody', label: 'Кросс-боди' },
+  { id: 'crossbody', label: 'Сумка' },
 ];
 
-/** Count customization choices that differ from a baseline snapshot (for level 19) */
 export function countActiveCustomizations(
   a: import('@/types').AvatarState,
   baseline: import('@/types').AvatarState

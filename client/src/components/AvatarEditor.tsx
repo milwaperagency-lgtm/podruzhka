@@ -7,6 +7,7 @@ import {
   EARRINGS,
   EYESHADOWS,
   EYE_COLORS,
+  EYE_SHAPES,
   FACE_SHAPES,
   HAIR_COLORS,
   HAIR_STYLES,
@@ -127,6 +128,9 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
       case 'eyes':
         return (
           <div className="space-y-4">
+            <OptionRow label="Форма глаз">
+              <ChipSelect value={value.eyeShape} onChange={(v) => patch({ eyeShape: v })} options={EYE_SHAPES} />
+            </OptionRow>
             <OptionRow label="Цвет глаз">
               <ChipSelect value={value.eyeColor} onChange={(v) => patch({ eyeColor: v })} options={EYE_COLORS} />
             </OptionRow>

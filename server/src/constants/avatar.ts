@@ -3,6 +3,7 @@ export interface AvatarState {
   skinTone: string;
   hairStyle: string;
   hairColor: string;
+  eyeShape: string;
   eyeColor: string;
   lashes: string;
   lipstick: string;
@@ -23,6 +24,7 @@ export const DEFAULT_AVATAR: AvatarState = {
   skinTone: 'medium',
   hairStyle: 'long_wavy',
   hairColor: 'chestnut',
+  eyeShape: 'almond',
   eyeColor: 'brown',
   lashes: 'natural',
   lipstick: 'none',

@@ -3,6 +3,8 @@ export interface AvatarState {
   skinTone: string;
   hairStyle: string;
   hairColor: string;
+  /** Форма глаз (отдельный PNG на пару с цветом). */
+  eyeShape: string;
   eyeColor: string;
   lashes: string;
   lipstick: string;
@@ -23,6 +25,7 @@ export const defaultAvatarState = (): AvatarState => ({
   skinTone: 'medium',
   hairStyle: 'long_wavy',
   hairColor: 'chestnut',
+  eyeShape: 'almond',
   eyeColor: 'brown',
   lashes: 'natural',
   lipstick: 'none',
@@ -37,6 +40,17 @@ export const defaultAvatarState = (): AvatarState => ({
   earrings: 'none',
   bag: 'none',
 });
+
+/** Совместимость со старыми сохранёнными аватарами без новых полей. */
+export function normalizeAvatarState(raw: Partial<AvatarState> | null | undefined): AvatarState {
+  const d = defaultAvatarState();
+  if (!raw) return d;
+  return {
+    ...d,
+    ...raw,
+    eyeShape: raw.eyeShape ?? d.eyeShape,
+  };
+}
 
 export interface UserProfile {
   telegram_id: number;

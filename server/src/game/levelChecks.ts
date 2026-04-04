@@ -53,9 +53,9 @@ export function validateLevelTask(levelId: number, s: AvatarState): { ok: true }
         ? { ok: true }
         : { ok: false, reason: 'Смените причёску и/или цвет волос.' };
     case 8:
-      return s.eyeColor !== 'brown' || s.lashes !== 'natural'
+      return s.eyeColor !== 'brown' || s.lashes !== 'natural' || s.eyeShape !== 'almond'
         ? { ok: true }
-        : { ok: false, reason: 'Измените цвет глаз или ресницы.' };
+        : { ok: false, reason: 'Измените форму глаз, цвет или ресницы.' };
     case 9:
       return s.jacket !== 'none' ? { ok: true } : { ok: false, reason: 'Наденьте жакет/накидку.' };
     case 10:

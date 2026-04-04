@@ -10,23 +10,28 @@ import {
   saveAvatar,
 } from '@/lib/api';
 import type { AvatarState, PromoReward, UserProfile } from '@/types';
-import { defaultAvatarState } from '@/types';
+import { defaultAvatarState, normalizeAvatarState } from '@/types';
+import { publicUrl } from '@/lib/publicUrl';
 import { LEVELS } from '@/data/levels';
 import AvatarEditor from '@/components/AvatarEditor';
 
 const CHANNEL = import.meta.env.VITE_TELEGRAM_CHANNEL ?? 'https://t.me/podruzhkahse';
 const BOT_LINK = import.meta.env.VITE_TELEGRAM_BOT ?? 'https://t.me/podruzhkahse_bot';
 
-/** Логотип Подружка из `client/public/podruzhka-logo.png` */
+/** Логотип: PNG из сборки или SVG-запасной вариант (если PNG не скопирован в `public/`). */
 function PodruzhkaLogo({ className = '' }: { className?: string }) {
   return (
     <img
-      src="/podruzhka-logo.png"
+      src={publicUrl('podruzhka-logo.png')}
       alt="Подружка"
       width={120}
       height={120}
       decoding="async"
       className={`select-none object-contain ${className}`}
+      onError={(e) => {
+        const el = e.currentTarget;
+        if (!el.src.includes('podruzhka-logo.svg')) el.src = publicUrl('podruzhka-logo.svg');
+      }}
     />
   );
 }
@@ -90,7 +95,7 @@ export default function App() {
       created_avatar: data.user.created_avatar,
       onboarding_complete: data.user.onboarding_complete,
     });
-    setAvatar(data.user.created_avatar);
+    setAvatar(normalizeAvatarState(data.user.created_avatar));
     setSubOk(data.subscription.ok);
     const r = await fetchRewards();
     setPromos(r.promos);

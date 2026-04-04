@@ -8,6 +8,7 @@ const AvatarSchema = new mongoose.Schema<AvatarState>(
     skinTone: String,
     hairStyle: String,
     hairColor: String,
+    eyeShape: String,
     eyeColor: String,
     lashes: String,
     lipstick: String,

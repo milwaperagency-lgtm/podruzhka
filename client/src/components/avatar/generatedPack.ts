@@ -1,138 +1,159 @@
 import type { AvatarState } from '@/types';
+import { publicUrl } from '@/lib/publicUrl';
 
-const BASE = '/avatar-assets/generated';
+const BASE = () => publicUrl('avatar-assets/generated');
+const BASES = () => publicUrl('avatar-assets/bases');
 
-/** Пути к сгенерированным PNG (1024×1024, контент по центру). */
-export const GENERATED = {
-  eyes: {
-    brown: `${BASE}/eyes_brown.png`,
-    blue: `${BASE}/eyes_blue.png`,
-    green: `${BASE}/eyes_green.png`,
+function skinToneKey(t: string): 'light' | 'medium' | 'deep' {
+  if (t === 'porcelain' || t === 'light') return 'light';
+  if (t === 'medium' || t === 'tan') return 'medium';
+  return 'deep';
+}
+
+function faceShapeKey(s: string): 'oval' | 'round' | 'heart' {
+  if (s === 'round' || s === 'heart') return s;
+  return 'oval';
+}
+
+function hairStyleKey(s: string): 'bob' | 'pony' | 'long' {
+  if (s === 'bob') return 'bob';
+  if (s === 'pony') return 'pony';
+  return 'long';
+}
+
+const HAIR_COLORS = ['black', 'chestnut', 'blonde', 'copper', 'pink', 'lilac'] as const;
+function hairColorKey(c: string): (typeof HAIR_COLORS)[number] {
+  return (HAIR_COLORS as readonly string[]).includes(c) ? (c as (typeof HAIR_COLORS)[number]) : 'chestnut';
+}
+
+function eyeShapeKey(s: string): 'almond' | 'round' | 'wide' {
+  if (s === 'round' || s === 'wide') return s;
+  return 'almond';
+}
+
+const EYE_COLORS = ['brown', 'blue', 'green'] as const;
+function eyeColorKey(c: string): (typeof EYE_COLORS)[number] {
+  return (EYE_COLORS as readonly string[]).includes(c) ? (c as (typeof EYE_COLORS)[number]) : 'brown';
+}
+
+/** Базы лица (тон × форма). */
+export const SKIN_BASE = {
+  light: {
+    oval: () => `${BASES()}/skin_light_oval.png`,
+    round: () => `${BASES()}/skin_light_round.png`,
+    heart: () => `${BASES()}/skin_light_heart.png`,
   },
-  lips: {
-    nude: `${BASE}/lips_nude.png`,
-    rose: `${BASE}/lips_pink.png`,
-    berry: `${BASE}/lips_red.png`,
-    red: `${BASE}/lips_red.png`,
-    coral: `${BASE}/lips_pink.png`,
+  medium: {
+    oval: () => `${BASES()}/skin_medium_oval.png`,
+    round: () => `${BASES()}/skin_medium_round.png`,
+    heart: () => `${BASES()}/skin_medium_heart.png`,
   },
-  hair: {
-    long: `${BASE}/hair_long.png`,
-    bob: `${BASE}/hair_bob.png`,
-    pony: `${BASE}/hair_pony.png`,
+  deep: {
+    oval: () => `${BASES()}/skin_deep_oval.png`,
+    round: () => `${BASES()}/skin_deep_round.png`,
+    heart: () => `${BASES()}/skin_deep_heart.png`,
   },
-  haircolor: {
-    blonde: `${BASE}/haircolor_blonde.png`,
-    chestnut: `${BASE}/haircolor_brown.png`,
-    copper: `${BASE}/haircolor_brown.png`,
-    black: `${BASE}/haircolor_black.png`,
-    pink: `${BASE}/haircolor_blonde.png`,
-    lilac: `${BASE}/haircolor_blonde.png`,
-  },
-  outfit: {
-    hoodie: `${BASE}/outfit_hoodie.png`,
-    dress: `${BASE}/outfit_dress.png`,
-    top: `${BASE}/outfit_top.png`,
-  },
-  makeup: {
-    blush: `${BASE}/makeup_blush.png`,
-    eyeliner: `${BASE}/makeup_eyeliner.png`,
-    highlighter: `${BASE}/makeup_highlighter.png`,
-  },
-  shoes: {
-    sneakers_white: `${BASE}/shoes_sneakers.png`,
-    sneakers_pastel: `${BASE}/shoes_sneakers.png`,
-    heels_black: `${BASE}/shoes_heels.png`,
-    heels_nude: `${BASE}/shoes_heels.png`,
-    boots: `${BASE}/shoes_boots.png`,
-  },
-  earrings: {
-    studs: `${BASE}/earrings_studs.png`,
-    hoops: `${BASE}/earrings_hoops.png`,
-    drops: `${BASE}/earrings_drops.png`,
-  },
-  brows: {
-    natural: `${BASE}/brows_natural.png`,
-    arched: `${BASE}/brows_arched.png`,
-    soft: `${BASE}/brows_soft.png`,
-  },
-  jacket: {
-    denim: `${BASE}/jacket_denim.png`,
-  },
-  bag: `${BASE}/bag_pink.png`,
-  bow: `${BASE}/accessory_bow.png`,
 } as const;
 
-/** Раскладка на холсте 320×420 (масштаб от 1024). */
+/** Раскладка на холсте 320×420 (единый масштаб от 1024). */
 export const L = {
-  hair: { x: 28, y: 28, w: 264, h: 340 },
-  outfit: { x: 24, y: 188, w: 272, h: 220 },
+  skinBase: { x: 18, y: 44, w: 284, h: 304 },
+  hair: { x: 26, y: 26, w: 268, h: 338 },
+  outfit: { x: 22, y: 198, w: 276, h: 210 },
   shoes: { x: 44, y: 358, w: 232, h: 56 },
-  eyes: { x: 88, y: 128, w: 144, h: 72 },
-  lips: { x: 112, y: 178, w: 96, h: 48 },
-  makeupBlush: { x: 48, y: 138, w: 224, h: 120 },
-  makeupLiner: { x: 56, y: 120, w: 208, h: 90 },
-  makeupHi: { x: 52, y: 128, w: 216, h: 140 },
-  brows: { x: 72, y: 108, w: 176, h: 40 },
+  eyes: { x: 86, y: 130, w: 148, h: 74 },
+  lips: { x: 108, y: 186, w: 104, h: 52 },
+  lashes: { x: 86, y: 128, w: 148, h: 78 },
+  makeupBlush: { x: 46, y: 140, w: 228, h: 122 },
+  makeupLiner: { x: 54, y: 122, w: 212, h: 92 },
+  makeupHi: { x: 50, y: 130, w: 220, h: 142 },
+  brows: { x: 70, y: 108, w: 180, h: 42 },
   earrings: { x: 0, y: 0, w: 320, h: 420 },
   jacket: { x: 20, y: 168, w: 280, h: 240 },
   bag: { x: 188, y: 248, w: 120, h: 140 },
   bow: { x: 96, y: 18, w: 128, h: 72 },
 };
 
+/** Единая точка для сумки (один вариант в UI). */
+export function bagSrc(): string {
+  return `${BASE()}/bag_crossbody.png`;
+}
+
+export function skinBaseSrc(state: AvatarState): string {
+  const tone = skinToneKey(state.skinTone);
+  const shape = faceShapeKey(state.faceShape);
+  return SKIN_BASE[tone][shape]();
+}
+
 export function eyeSrc(state: AvatarState): string {
-  return GENERATED.eyes[state.eyeColor as keyof typeof GENERATED.eyes] ?? GENERATED.eyes.brown;
+  const sh = eyeShapeKey(state.eyeShape);
+  const c = eyeColorKey(state.eyeColor);
+  return `${BASE()}/eyes_${sh}_${c}.png`;
 }
 
 export function lipSrc(state: AvatarState): string | null {
   if (state.lipstick === 'none') return null;
-  const k = state.lipstick as keyof typeof GENERATED.lips;
-  return GENERATED.lips[k] ?? GENERATED.lips.nude;
+  return `${BASE()}/lips_${state.lipstick}.png`;
 }
 
-export function hairSrc(state: AvatarState): string | null {
-  const { hairStyle, hairColor } = state;
-  if (hairStyle === 'bob') {
-    const c = hairColor as keyof typeof GENERATED.haircolor;
-    return GENERATED.haircolor[c] ?? GENERATED.haircolor.blonde;
-  }
-  if (hairStyle === 'pony') return GENERATED.hair.pony;
-  if (hairStyle === 'long_straight' || hairStyle === 'long_wavy') return GENERATED.hair.long;
-  if (hairStyle === 'pixie' || hairStyle === 'bun') return GENERATED.hair.bob;
-  return GENERATED.hair.long;
+export function hairSrc(state: AvatarState): string {
+  const style = hairStyleKey(state.hairStyle);
+  const color = hairColorKey(state.hairColor);
+  return `${BASE()}/hair_${style}_${color}.png`;
+}
+
+export function lashSrc(state: AvatarState): string {
+  return `${BASE()}/lashes_${state.lashes}.png`;
 }
 
 export function outfitSrc(state: AvatarState): string | null {
-  if (state.outfitMode === 'dress' && state.dress !== 'none') return GENERATED.outfit.dress;
-  if (state.top === 'hoodie') return GENERATED.outfit.hoodie;
-  return GENERATED.outfit.top;
+  if (state.outfitMode === 'dress' && state.dress !== 'none') {
+    return `${BASE()}/dress_${state.dress}.png`;
+  }
+  if (state.outfitMode === 'top') {
+    return `${BASE()}/top_${state.top}.png`;
+  }
+  return null;
 }
 
 export function shoeSrc(state: AvatarState): string {
-  const s = state.shoes as keyof typeof GENERATED.shoes;
-  return GENERATED.shoes[s] ?? GENERATED.shoes.sneakers_white;
+  return `${BASE()}/shoes_${state.shoes}.png`;
 }
 
 export function jacketOverlaySrc(state: AvatarState): string | null {
-  if (state.jacket === 'denim') return GENERATED.jacket.denim;
+  if (state.jacket === 'denim') return `${BASE()}/jacket_denim.png`;
   return null;
 }
 
 export function earringSrc(state: AvatarState): string | null {
   if (state.earrings === 'none') return null;
-  return GENERATED.earrings[state.earrings as keyof typeof GENERATED.earrings] ?? null;
+  return `${BASE()}/earrings_${state.earrings}.png`;
 }
 
-export function makeupSrc(kind: 'blush' | 'eyeshadow' | 'highlighter', state: AvatarState): string | null {
-  if (kind === 'blush' && state.blush !== 'none') return GENERATED.makeup.blush;
-  if (kind === 'eyeshadow' && state.eyeshadow !== 'none') return GENERATED.makeup.eyeliner;
-  if (kind === 'highlighter' && state.highlighter !== 'none') return GENERATED.makeup.highlighter;
-  return null;
-}
-
-/** Брови привязаны к тону кожи — условно */
 export function browSrc(state: AvatarState): string {
-  if (state.skinTone === 'deep' || state.skinTone === 'tan') return GENERATED.brows.arched;
-  if (state.skinTone === 'porcelain' || state.skinTone === 'light') return GENERATED.brows.soft;
-  return GENERATED.brows.natural;
+  if (state.skinTone === 'deep' || state.skinTone === 'tan') return `${BASE()}/brows_arched.png`;
+  if (state.skinTone === 'porcelain' || state.skinTone === 'light') return `${BASE()}/brows_soft.png`;
+  return `${BASE()}/brows_natural.png`;
+}
+
+export function blushSrc(state: AvatarState): string | null {
+  if (state.blush === 'none') return null;
+  return `${BASE()}/blush_${state.blush}.png`;
+}
+
+export function eyeshadowSrc(state: AvatarState): string | null {
+  if (state.eyeshadow === 'none') return null;
+  return `${BASE()}/eyeshadow_${state.eyeshadow}.png`;
+}
+
+export function highlighterSrc(state: AvatarState): string | null {
+  if (state.highlighter === 'none') return null;
+  return `${BASE()}/highlighter_${state.highlighter}.png`;
+}
+
+/** @deprecated используйте blushSrc / eyeshadowSrc / highlighterSrc */
+export function makeupSrc(kind: 'blush' | 'eyeshadow' | 'highlighter', state: AvatarState): string | null {
+  if (kind === 'blush') return blushSrc(state);
+  if (kind === 'eyeshadow') return eyeshadowSrc(state);
+  return highlighterSrc(state);
 }
