@@ -44,9 +44,9 @@ export interface BeautyAvatarCanvasProps {
 }
 
 /**
- * Слои: фон → база кожи → обувь → бельё → низ/верх/платье → жакет →
- * зад волос (поверх одежды, чтобы длина не «обрезалась» воротом) →
- * части лица → чёлка → украшение.
+ * Ориентир — силуэт `base_*.png`: все слои в тех же 320×420 (`L.full` / `L_FACE`), что и база тела.
+ * Слои (снизу вверх): фон → база кожи → бельё → низ/верх или платье → жакет → обувь →
+ * зад волос (за спиной/плечами) → лицо (губы последними в группе лица) → украшение → чёлка (самый верх).
  */
 const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
   function BeautyAvatarCanvas({ state }, ref) {
@@ -106,16 +106,6 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             />
           )}
 
-          {imgGet(images, shoeU) && (
-            <KonvaImage
-              image={imgGet(images, shoeU)!}
-              x={L.full.x}
-              y={L.full.y}
-              width={L.full.w}
-              height={L.full.h}
-              listening={false}
-            />
-          )}
           {imgGet(images, undU) && (
             <KonvaImage
               image={imgGet(images, undU)!}
@@ -159,6 +149,16 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
           {jackU && imgGet(images, jackU) && (
             <KonvaImage
               image={imgGet(images, jackU)!}
+              x={L.full.x}
+              y={L.full.y}
+              width={L.full.w}
+              height={L.full.h}
+              listening={false}
+            />
+          )}
+          {imgGet(images, shoeU) && (
+            <KonvaImage
+              image={imgGet(images, shoeU)!}
               x={L.full.x}
               y={L.full.y}
               width={L.full.w}
@@ -219,16 +219,6 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
               listening={false}
             />
           )}
-          {imgGet(images, mouthU) && (
-            <KonvaImage
-              image={imgGet(images, mouthU)!}
-              x={L_FACE.x}
-              y={L_FACE.y}
-              width={L_FACE.w}
-              height={L_FACE.h}
-              listening={false}
-            />
-          )}
           {imgGet(images, browU) && (
             <KonvaImage
               image={imgGet(images, browU)!}
@@ -269,10 +259,20 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
               listening={false}
             />
           )}
-
-          {imgGet(images, bangsU) && (
+          {imgGet(images, mouthU) && (
             <KonvaImage
-              image={imgGet(images, bangsU)!}
+              image={imgGet(images, mouthU)!}
+              x={L_FACE.x}
+              y={L_FACE.y}
+              width={L_FACE.w}
+              height={L_FACE.h}
+              listening={false}
+            />
+          )}
+
+          {jewU && imgGet(images, jewU) && (
+            <KonvaImage
+              image={imgGet(images, jewU)!}
               x={L.full.x}
               y={L.full.y}
               width={L.full.w}
@@ -281,9 +281,9 @@ const BeautyAvatarCanvas = forwardRef<Konva.Stage, BeautyAvatarCanvasProps>(
             />
           )}
 
-          {jewU && imgGet(images, jewU) && (
+          {imgGet(images, bangsU) && (
             <KonvaImage
-              image={imgGet(images, jewU)!}
+              image={imgGet(images, bangsU)!}
               x={L.full.x}
               y={L.full.y}
               width={L.full.w}

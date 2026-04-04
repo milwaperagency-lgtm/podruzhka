@@ -1,86 +1,91 @@
 /**
- * Части лица — `avatar-assets/parts/`; тело — `avatar-assets/casual/`; база кожи — `avatar-assets/bases/`.
+ * Варианты UI строго по `assetIds.ts` — только то, для чего есть файлы в `public/avatar-assets/`.
  */
+import {
+  CASUAL_BOTTOM_IDS,
+  CASUAL_DRESS_IDS,
+  CASUAL_JACKET_IDS,
+  CASUAL_JEWELRY_IDS,
+  CASUAL_SHOE_IDS,
+  CASUAL_TOP_IDS,
+  CASUAL_UNDERWEAR_IDS,
+  HAIR_BANG_IDS,
+  HAIR_SET_IDS,
+  PART_DECOR_FACE_IDS,
+  PART_EAR_IDS,
+  PART_EYEBROW_IDS,
+  PART_EYELASH_IDS,
+  PART_EYE_WHITE_IDS,
+  PART_MOUTH_IDS,
+  PART_NOSE_IDS,
+  PUPIL_IDS,
+  SKIN_TONE_IDS,
+} from '@/data/assetIds';
 
-function nOpts(n: number, labelFn: (i: number) => string): { id: string; label: string }[] {
-  return Array.from({ length: n }, (_, i) => ({
-    id: String(i + 1),
-    label: labelFn(i + 1),
-  }));
+function labelMap(ids: readonly string[], labelFn: (id: string) => string): { id: string; label: string }[] {
+  return ids.map((id) => ({ id, label: labelFn(id) }));
 }
 
-const PUPIL_IDS = [
-  '1a',
-  '1b',
-  '1c',
-  '2a',
-  '2b',
-  '2c',
-  '3a',
-  '3b',
-  '3c',
-  '4a',
-  '4b',
-  '4c',
-  '5a',
-  '5b',
-  '5c',
-] as const;
+export const PART_EARS = PART_EAR_IDS.map((id) =>
+  id === 'none'
+    ? { id: 'none', label: 'Без ушей' }
+    : { id, label: `Форма ушей · ${id}` }
+);
 
-export const PART_EARS = [
-  { id: 'none', label: 'Без ушей' },
-  ...nOpts(8, (i) => `Форма ушей · ${i}`),
-];
+export const PART_DECOR_FACE = PART_DECOR_FACE_IDS.map((id) =>
+  id === 'none'
+    ? { id: 'none', label: 'Без макияжа' }
+    : { id, label: `Макияж / декор кожи · ${id}` }
+);
 
-export const PART_DECOR_FACE = [
-  { id: 'none', label: 'Без макияжа' },
-  ...nOpts(21, (i) => `Макияж / декор кожи · ${i}`),
-];
-
-export const PART_EYEBROWS = nOpts(10, (i) => `Брови · вариант ${i}`);
-
-export const PART_EYELASHES = nOpts(7, (i) => `Ресницы · ${i}`);
-
-export const PART_EYE_WHITE = nOpts(4, (i) => `Склера / форма глаза · ${i}`);
+export const PART_EYEBROWS = labelMap(PART_EYEBROW_IDS, (id) => `Брови · вариант ${id}`);
+export const PART_EYELASHES = labelMap(PART_EYELASH_IDS, (id) => `Ресницы · ${id}`);
+export const PART_EYE_WHITE = labelMap(PART_EYE_WHITE_IDS, (id) => `Склера / форма глаза · ${id}`);
 
 export const PART_PUPILS = PUPIL_IDS.map((id) => ({
   id,
   label: `Радужка · ${id}`,
 }));
 
-export const PART_NOSE = nOpts(6, (i) => `Нос · ${i}`);
+export const PART_NOSE = labelMap(PART_NOSE_IDS, (id) => `Нос · ${id}`);
+export const PART_MOUTH = labelMap(PART_MOUTH_IDS, (id) => `Губы · ${id}`);
 
-export const PART_MOUTH = nOpts(14, (i) => `Губы · ${i}`);
+export const SKIN_TONES = SKIN_TONE_IDS.map((id) => {
+  const labels: Record<(typeof SKIN_TONE_IDS)[number], string> = {
+    light: 'Светлая кожа',
+    medium: 'Средняя кожа',
+    deep: 'Тёмная кожа',
+  };
+  return { id, label: labels[id] };
+});
 
-/** Три PNG-базы кожи — `avatar-assets/bases/base_*.png` */
-export const SKIN_TONES = [
-  { id: 'light', label: 'Светлая кожа' },
-  { id: 'medium', label: 'Средняя кожа' },
-  { id: 'deep', label: 'Тёмная кожа' },
-] as const;
-
-export const HAIR_SETS = nOpts(10, (i) => `Причёска сзади · ${i}`);
+export const HAIR_SETS = labelMap(HAIR_SET_IDS, (id) => `Причёска сзади · ${id}`);
 
 export const HAIR_TONES = [
   { id: 'a' as const, label: 'Пряди сзади — оттенок A' },
   { id: 'b' as const, label: 'Пряди сзади — оттенок B' },
 ];
 
-export const HAIR_BANGS_OPTS = nOpts(10, (i) => `Чёлка · ${i}`);
+export const HAIR_BANGS_OPTS = labelMap(HAIR_BANG_IDS, (id) => `Чёлка · ${id}`);
 
-export const CASUAL_TOPS = nOpts(13, (i) => `Верх одежды · ${i}`);
-export const CASUAL_BOTTOMS = nOpts(7, (i) => `Низ (юбка/брюки) · ${i}`);
-export const CASUAL_DRESSES = nOpts(10, (i) => `Платье · ${i}`);
-export const CASUAL_JACKETS = [
-  { id: 'none', label: 'Без жакета' },
-  ...nOpts(10, (i) => `Жакет / накидка · ${i}`),
-];
-export const CASUAL_SHOES = nOpts(10, (i) => `Обувь · ${i}`);
-export const CASUAL_UNDERWEAR = nOpts(10, (i) => `Нижнее бельё · ${i}`);
-export const CASUAL_JEWELRY = [
-  { id: 'none', label: 'Без украшений' },
-  ...nOpts(10, (i) => `Украшение · ${i}`),
-];
+export const CASUAL_TOPS = labelMap(CASUAL_TOP_IDS, (id) => `Верх одежды · ${id}`);
+export const CASUAL_BOTTOMS = labelMap(CASUAL_BOTTOM_IDS, (id) => `Низ (юбка/брюки) · ${id}`);
+export const CASUAL_DRESSES = labelMap(CASUAL_DRESS_IDS, (id) => `Платье · ${id}`);
+
+export const CASUAL_JACKETS = CASUAL_JACKET_IDS.map((id) =>
+  id === 'none'
+    ? { id: 'none', label: 'Без жакета' }
+    : { id, label: `Жакет / накидка · ${id}` }
+);
+
+export const CASUAL_SHOES = labelMap(CASUAL_SHOE_IDS, (id) => `Обувь · ${id}`);
+export const CASUAL_UNDERWEAR = labelMap(CASUAL_UNDERWEAR_IDS, (id) => `Нижнее бельё · ${id}`);
+
+export const CASUAL_JEWELRY = CASUAL_JEWELRY_IDS.map((id) =>
+  id === 'none'
+    ? { id: 'none', label: 'Без украшений' }
+    : { id, label: `Украшение · ${id}` }
+);
 
 export function countActiveCustomizations(
   a: import('@/types').AvatarState,

@@ -25,7 +25,7 @@ export function startTelegramBot() {
 
   bot.start(async (ctx) => {
     await ctx.reply(
-      'Добро пожаловать в Beauty Avatar Challenge от Подружка 💄\n\nСоздай аватар, проходи уровни и получай промокоды FREE5, FREE10, FREE15, FREE20 и FREE25!',
+      'Добро пожаловать в Beauty Avatar Challenge от Подружка 💄\n\nСоздай аватар, проходи уровни и получай промокоды скидку до 25%!',
       {
         reply_markup: {
           keyboard: [[webAppButton]],

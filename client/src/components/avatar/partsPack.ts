@@ -48,18 +48,21 @@ export function partMouthSrc(id: string): string {
   return `${PARTS()}/mouth/${id}.png`;
 }
 
-/** Все URL частей лица для предзагрузки (порядок = порядок слоёв снизу вверх). */
+/**
+ * URL частей лица для предзагрузки.
+ * Губы — последними, чтобы слои макияжа/ресниц не перекрывали рот.
+ */
 export function collectFacePartUrls(state: AvatarState): string[] {
   const list: string[] = [baseWhiteEyesSrc()];
   list.push(partEyeWhiteSrc(state.partEyeWhite));
   list.push(partPupilSrc(state.partPupil));
   list.push(partNoseSrc(state.partNose));
-  list.push(partMouthSrc(state.partMouth));
   list.push(partEyebrowsSrc(state.partEyebrows));
   list.push(partEyelashesSrc(state.partEyelashes));
   const d = partDecorFaceSrc(state.partDecorFace);
   if (d) list.push(d);
   const e = partEarsSrc(state.partEars);
   if (e) list.push(e);
+  list.push(partMouthSrc(state.partMouth));
   return list;
 }

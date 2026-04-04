@@ -108,9 +108,6 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
             <OptionRow label="Нос">
               <ChipSelect value={value.partNose} onChange={(v) => patch({ partNose: v })} options={PART_NOSE} />
             </OptionRow>
-            <OptionRow label="Тон кожи (база тела)">
-              <ChipSelect value={value.skinTone} onChange={(v) => patch({ skinTone: v })} options={[...SKIN_TONES]} />
-            </OptionRow>
           </div>
         );
       case 'eyes':
@@ -249,11 +246,31 @@ export default function AvatarEditor({ value, onChange, previewRef }: AvatarEdit
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div
-        className="glass-panel mx-auto w-full max-w-[340px] overflow-visible p-2 transition-all duration-300 ease-out"
+        className="glass-panel mx-auto w-full max-w-[340px] overflow-visible p-2 pt-4 transition-all duration-300 ease-out"
         style={{ aspectRatio: `${320}/${420}` }}
       >
-        <div className="h-full w-full min-h-0">
+        <div className="h-full w-full min-h-0 overflow-visible">
           <BeautyAvatarCanvas ref={previewRef} state={value} />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-center text-xs font-semibold uppercase tracking-wide text-podrygka-deep/60">Цвет кожи</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {SKIN_TONES.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => patch({ skinTone: o.id })}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                value.skinTone === o.id
+                  ? 'bg-gradient-to-r from-podrygka-pink to-podrygka-deep text-white shadow-card'
+                  : 'bg-white/90 text-podrygka-deep ring-1 ring-podrygka-rose/40 hover:ring-podrygka-pink/50'
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
         </div>
       </div>
 
