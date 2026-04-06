@@ -1,4 +1,4 @@
-# Beauty Avatar Challenge (podruzhka)
+# Подружка: Beauty Room
 
 Telegram Mini App для beauty-ритейла «Подружка»: слойный редактор аватара, уровни с заданиями, проверка подписки на канал и промокоды `PODRYGKA-XXXX`.
 

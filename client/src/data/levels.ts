@@ -42,7 +42,7 @@ export const LEVELS: LevelDef[] = [
   { id: 24, title: 'Urban girl', description: 'Не базовые верх и низ, кроссовки, макияж.', points: 80 },
   {
     id: 25,
-    title: 'Легенда Beauty Avatar',
+    title: 'Легенда Beauty Room',
     description: 'Финал: 12+ отличий, 4+ слоя макияжа, платье, каблуки, жакет, украшение. Промокод FREE25.',
     points: 150,
   },

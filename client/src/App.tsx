@@ -221,8 +221,8 @@ export default function App() {
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'Beauty Avatar Challenge',
-          text: 'Мой beauty-аватар — Подружка 💄',
+          title: 'Подружка: Beauty Room',
+          text: 'Мой образ из Подружка: Beauty Room 💄',
         });
       } else {
         const a = document.createElement('a');
@@ -270,7 +270,7 @@ export default function App() {
           </div>
           <p className="font-display text-2xl font-bold text-podrygka-deep">Подписка на канал</p>
           <p className="mt-4 text-podrygka-deep/80">
-            Чтобы играть в Beauty Avatar Challenge, подпишитесь на наш Telegram-канал.
+            Чтобы играть в «Подружка: Beauty Room», подпишитесь на наш Telegram-канал.
           </p>
           <div className="mt-8 flex flex-col gap-3">
             <button type="button" className="btn-primary w-full" onClick={onSubscribeOpen}>
@@ -293,14 +293,14 @@ export default function App() {
           <div className="mb-6 flex justify-center">
             <PodruzhkaLogo className="h-24 w-24 rounded-2xl shadow-card ring-2 ring-white/80" />
           </div>
-          <p className="text-center font-display text-3xl font-bold text-podrygka-deep">Beauty Avatar Challenge</p>
+          <p className="text-center font-display text-3xl font-bold text-podrygka-deep">Подружка: Beauty Room</p>
           <p className="mt-4 text-center text-lg text-podrygka-deep/85">
             Создай идеальный образ, проходи уровни и получай промокоды Подружка.
           </p>
           <ul className="mt-6 space-y-2 text-left text-sm text-podrygka-deep/75">
             <li>✓ Слойный редактор лица, макияжа и наряда</li>
             <li>✓ Задания на стиль и креатив</li>
-            <li>✓ Промокоды FREE5, FREE10, FREE15, FREE20, FREE25 на этапах 5–25</li>
+            <li>✓ Получай промокоды на скидку до 25% и другие подарки</li>
           </ul>
           <button type="button" className="btn-primary mt-10 w-full" onClick={onStartWelcome}>
             Начать
@@ -327,7 +327,7 @@ export default function App() {
             <PodruzhkaLogo className="h-11 w-11 shrink-0 rounded-xl shadow-sm ring-1 ring-podrygka-rose/20" />
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-wider text-podrygka-pink">Подружка</p>
-              <h1 className="font-display text-xl font-bold text-podrygka-deep">Beauty Avatar</h1>
+              <h1 className="font-display text-xl font-bold text-podrygka-deep">Beauty Room</h1>
             </div>
           </div>
           <div className="chip">{user?.points ?? 0} очков</div>

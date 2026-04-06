@@ -2,7 +2,7 @@
   "name": "beauty-avatar-challenge",
   "private": true,
   "version": "1.0.0",
-  "description": "Telegram Mini App — Beauty Avatar Challenge (Podrygka-inspired)",
+  "description": "Telegram Mini App — Подружка: Beauty Room",
   "scripts": {
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",

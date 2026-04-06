@@ -3,7 +3,7 @@ import { BOT_TOKEN, WEBAPP_URL } from '../config.js';
 
 const CHANNEL = process.env.TELEGRAM_CHANNEL_USERNAME ?? 'podruzhkahse';
 
-const webAppButton = { text: '✨ Beauty Avatar Challenge', web_app: { url: WEBAPP_URL } };
+const webAppButton = { text: '✨ Подружка: Beauty Room', web_app: { url: WEBAPP_URL } };
 
 export function startTelegramBot() {
   if (!BOT_TOKEN) {
@@ -25,7 +25,7 @@ export function startTelegramBot() {
 
   bot.start(async (ctx) => {
     await ctx.reply(
-      'Добро пожаловать в Beauty Avatar Challenge от Подружка 💄\n\nСоздай аватар, проходи уровни и получай промокоды скидку до 25%!',
+      'Добро пожаловать в «Подружка: Beauty Room» 💄\n\nСоздай аватар, проходи уровни и получай промокоды со скидкой до 25%!',
       {
         reply_markup: {
           keyboard: [[webAppButton]],
